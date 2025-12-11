@@ -3,10 +3,10 @@ class Document {
   final String title;
   final String size;
   final String timeAgo;
-  final String status; // 'Synced', 'OCR Ready', 'Secured'
+  final String status; // 'SYNCED', 'OCR READY', 'SECURED'
   final bool isSecured;
   final int pageCount;
-  final String previewImage; // For now just a color or placeholder
+  final String previewImage;
 
   Document({
     required this.id,

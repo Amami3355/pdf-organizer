@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
-import 'dart:ui'; // Required for ImageFilter
-import '../theme/app_theme.dart';
+import 'dart:ui';
+import '../../config/theme.dart';
+
+/// ✏️ Editor Screen
+/// 
+/// PDF page management and editing tools.
 
 class EditorScreen extends StatelessWidget {
   const EditorScreen({super.key});
@@ -8,12 +12,12 @@ class EditorScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.background,
+      backgroundColor: AppColors.background,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, color: AppTheme.textPrimary, size: 20),
+          icon: const Icon(Icons.arrow_back_ios_new, color: AppColors.textPrimary, size: 20),
           onPressed: () => Navigator.pop(context),
         ),
         title: Column(
@@ -35,7 +39,7 @@ class EditorScreen extends StatelessWidget {
             child: const Text(
               'Export',
               style: TextStyle(
-                color: AppTheme.primary,
+                color: AppColors.primary,
                 fontWeight: FontWeight.bold,
                 fontSize: 16,
               ),
@@ -51,7 +55,7 @@ class EditorScreen extends StatelessWidget {
               crossAxisCount: 2,
               crossAxisSpacing: 16,
               mainAxisSpacing: 16,
-              childAspectRatio: 0.70, // Adjust for A4 ratio (taller)
+              childAspectRatio: 0.70,
               children: [
                 _buildPageCard(context, 1, false),
                 _buildPageCard(context, 2, false),
@@ -114,7 +118,7 @@ class EditorScreen extends StatelessWidget {
             children: [
               Container(
                 decoration: BoxDecoration(
-                  color: const Color(0xFFF5F5F5), // Off-white paper color
+                  color: const Color(0xFFF5F5F5),
                   borderRadius: BorderRadius.circular(4),
                   boxShadow: [
                     BoxShadow(
@@ -124,10 +128,9 @@ class EditorScreen extends StatelessWidget {
                     ),
                   ],
                   border: isSelected
-                      ? Border.all(color: AppTheme.primary, width: 3)
+                      ? Border.all(color: AppColors.primary, width: 3)
                       : null,
                 ),
-                // Placeholder for PDF content - simulating text lines
                 child: Padding(
                   padding: const EdgeInsets.all(12.0),
                   child: Column(
@@ -150,7 +153,7 @@ class EditorScreen extends StatelessWidget {
                   right: 8,
                   child: Container(
                     decoration: const BoxDecoration(
-                      color: AppTheme.primary,
+                      color: AppColors.primary,
                       shape: BoxShape.circle,
                     ),
                     padding: const EdgeInsets.all(4),
@@ -164,7 +167,7 @@ class EditorScreen extends StatelessWidget {
         Text(
           '$pageNumber',
           style: TextStyle(
-            color: isSelected ? AppTheme.primary : AppTheme.textSecondary,
+            color: isSelected ? AppColors.primary : AppColors.textSecondary,
             fontWeight: FontWeight.w600,
           ),
         ),
@@ -178,7 +181,7 @@ class EditorScreen extends StatelessWidget {
         Expanded(
           child: CustomPaint(
             painter: DashedBorderPainter(
-              color: AppTheme.textSecondary.withValues(alpha: 0.5),
+              color: AppColors.textSecondary.withValues(alpha: 0.5),
               strokeWidth: 1.5,
               gap: 5,
             ),
@@ -192,17 +195,17 @@ class EditorScreen extends StatelessWidget {
                   children: [
                     Container(
                       padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
+                      decoration: const BoxDecoration(
                         shape: BoxShape.circle,
-                        color: AppTheme.surfaceLight,
+                        color: AppColors.surfaceLight,
                       ),
-                      child: const Icon(Icons.add, color: AppTheme.primary, size: 24),
+                      child: const Icon(Icons.add, color: AppColors.primary, size: 24),
                     ),
                     const SizedBox(height: 8),
                     Text(
                       'ADD PAGE',
                       style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                        color: AppTheme.primary,
+                        color: AppColors.primary,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -212,8 +215,8 @@ class EditorScreen extends StatelessWidget {
             ),
           ),
         ),
-        const SizedBox(height: 12), // To align with page numbers
-        const Text(''), // Spacer
+        const SizedBox(height: 12),
+        const Text(''),
       ],
     );
   }
@@ -222,12 +225,12 @@ class EditorScreen extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(icon, color: AppTheme.textSecondary),
+        Icon(icon, color: AppColors.textSecondary),
         const SizedBox(height: 4),
         Text(
           label,
           style: const TextStyle(
-            color: AppTheme.textSecondary,
+            color: AppColors.textSecondary,
             fontSize: 10,
           ),
         ),
@@ -256,11 +259,9 @@ class DashedBorderPainter extends CustomPainter {
 
     final double dashWidth = gap;
     final double dashSpace = gap;
-    final double startX = 0;
-    final double startY = 0;
     
     // Top
-    double currentX = startX;
+    double currentX = 0;
     while (currentX < size.width) {
       canvas.drawLine(
         Offset(currentX, 0),
@@ -271,7 +272,7 @@ class DashedBorderPainter extends CustomPainter {
     }
     
     // Right
-    double currentY = startY;
+    double currentY = 0;
     while (currentY < size.height) {
       canvas.drawLine(
         Offset(size.width, currentY),

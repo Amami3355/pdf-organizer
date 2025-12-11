@@ -1,41 +1,42 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import '../../../config/theme.dart';
+import '../../../config/routes.dart';
 import '../models/document_model.dart';
-import '../theme/app_theme.dart';
-import '../screens/editor_screen.dart';
 
 class DocumentCard extends StatelessWidget {
   final Document document;
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
 
   const DocumentCard({
     super.key,
     required this.document,
-    required this.onTap,
+    this.onTap,
   });
 
   Color _getStatusBgColor(String status) {
     switch (status) {
       case 'SYNCED':
-        return AppTheme.statusSyncedBg;
+        return AppColors.statusSyncedBg;
       case 'OCR READY':
-        return AppTheme.statusOcrBg;
+        return AppColors.statusOcrBg;
       case 'SECURED':
-        return AppTheme.statusSecuredBg;
+        return AppColors.statusSecuredBg;
       default:
-        return AppTheme.surfaceLight;
+        return AppColors.surfaceLight;
     }
   }
 
   Color _getStatusFgColor(String status) {
     switch (status) {
       case 'SYNCED':
-        return AppTheme.statusSyncedFg;
+        return AppColors.statusSyncedFg;
       case 'OCR READY':
-        return AppTheme.statusOcrFg;
+        return AppColors.statusOcrFg;
       case 'SECURED':
-        return AppTheme.statusSecuredFg;
+        return AppColors.statusSecuredFg;
       default:
-        return AppTheme.textSecondary;
+        return AppColors.textSecondary;
     }
   }
 
@@ -56,17 +57,17 @@ class DocumentCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        // Navigate to Editor on tap
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => const EditorScreen()),
-        );
+        if (onTap != null) {
+          onTap!();
+        } else {
+          context.push(AppRoutes.editor);
+        }
       },
       child: Container(
         margin: const EdgeInsets.only(bottom: 12),
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: AppTheme.surface,
+          color: AppColors.surface,
           borderRadius: BorderRadius.circular(16),
         ),
         child: Row(
@@ -76,13 +77,13 @@ class DocumentCard extends StatelessWidget {
               width: 48,
               height: 48,
               decoration: BoxDecoration(
-                color: AppTheme.surfaceLight,
+                color: AppColors.surfaceLight,
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Center(
                 child: document.isSecured
-                    ? const Icon(Icons.lock, color: AppTheme.textSecondary)
-                    : const Icon(Icons.picture_as_pdf, color: AppTheme.pdfRed),
+                    ? const Icon(Icons.lock, color: AppColors.textSecondary)
+                    : const Icon(Icons.picture_as_pdf, color: AppColors.pdfRed),
               ),
             ),
             const SizedBox(width: 16),
@@ -146,7 +147,7 @@ class DocumentCard extends StatelessWidget {
             // More Button
             IconButton(
               onPressed: () {},
-              icon: const Icon(Icons.more_vert, color: AppTheme.textSecondary),
+              icon: const Icon(Icons.more_vert, color: AppColors.textSecondary),
             ),
           ],
         ),

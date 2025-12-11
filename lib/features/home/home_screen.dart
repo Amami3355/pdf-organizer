@@ -1,16 +1,29 @@
 import 'package:flutter/material.dart';
-import '../theme/app_theme.dart';
-import '../components/quick_action_button.dart';
-import '../components/document_card.dart';
-import '../data/dummy_data.dart';
+import 'package:go_router/go_router.dart';
+import '../../config/theme.dart';
+import '../../config/routes.dart';
+import 'widgets/quick_action_button.dart';
+import 'widgets/document_card.dart';
+import 'data/dummy_data.dart';
 
-class DashboardScreen extends StatelessWidget {
-  const DashboardScreen({super.key});
+/// 🏠 Home Screen (Dashboard)
+/// 
+/// Main app screen showing recent documents and quick actions.
 
+class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  int _selectedNavIndex = 0;
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.background,
+      backgroundColor: AppColors.background,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20.0),
@@ -38,7 +51,7 @@ class DashboardScreen extends StatelessWidget {
                   ),
                   const CircleAvatar(
                     radius: 24,
-                    backgroundColor: Color(0xFFFFCCBC), // Light peach
+                    backgroundColor: Color(0xFFFFCCBC),
                     child: Text('A', style: TextStyle(color: Colors.brown, fontWeight: FontWeight.bold)),
                   ),
                 ],
@@ -48,15 +61,15 @@ class DashboardScreen extends StatelessWidget {
               // Search Bar
               Container(
                 decoration: BoxDecoration(
-                  color: AppTheme.surface,
+                  color: AppColors.surface,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: TextField(
                   decoration: InputDecoration(
-                    prefixIcon: const Icon(Icons.search, color: AppTheme.textSecondary),
+                    prefixIcon: const Icon(Icons.search, color: AppColors.textSecondary),
                     hintText: 'Search documents, PDFs, OCR',
                     suffixIcon: IconButton(
-                      icon: const Icon(Icons.tune, color: AppTheme.primary),
+                      icon: const Icon(Icons.tune, color: AppColors.primary),
                       onPressed: () {},
                     ),
                     border: InputBorder.none,
@@ -103,7 +116,7 @@ class DashboardScreen extends StatelessWidget {
                     child: Text(
                       'See All',
                       style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                        color: AppTheme.primary,
+                        color: AppColors.primary,
                       ),
                     ),
                   ),
@@ -118,7 +131,6 @@ class DashboardScreen extends StatelessWidget {
                   itemBuilder: (context, index) {
                     return DocumentCard(
                       document: DummyData.recentDocuments[index],
-                      onTap: () {},
                     );
                   },
                 ),
@@ -134,11 +146,7 @@ class DashboardScreen extends StatelessWidget {
         width: 64,
         decoration: const BoxDecoration(
           shape: BoxShape.circle,
-          gradient: LinearGradient(
-            colors: [Color(0xFF4CA6FF), Color(0xFF0056D2)],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
+          gradient: AppColors.primaryGradient,
           boxShadow: [
             BoxShadow(
               color: Color(0x400056D2),
@@ -158,17 +166,17 @@ class DashboardScreen extends StatelessWidget {
       
       // Bottom Navigation Bar
       bottomNavigationBar: BottomAppBar(
-        color: AppTheme.background,
+        color: AppColors.background,
         elevation: 0,
         child: Padding(
-          padding: const EdgeInsets.only(right: 80.0), // Space for FAB
+          padding: const EdgeInsets.only(right: 80.0),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              _buildNavBarItem(context, Icons.home_filled, 'Home', true),
-              _buildNavBarItem(context, Icons.folder_open, 'Files', false),
-              _buildNavBarItem(context, Icons.build_circle_outlined, 'Tools', false),
-              _buildNavBarItem(context, Icons.settings_outlined, 'Settings', false),
+              _buildNavBarItem(Icons.home_filled, 'Home', 0),
+              _buildNavBarItem(Icons.folder_open, 'Files', 1),
+              _buildNavBarItem(Icons.build_circle_outlined, 'Tools', 2),
+              _buildNavBarItem(Icons.settings_outlined, 'Settings', 3),
             ],
           ),
         ),
@@ -176,24 +184,34 @@ class DashboardScreen extends StatelessWidget {
     );
   }
   
-  Widget _buildNavBarItem(BuildContext context, IconData icon, String label, bool isSelected) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Icon(
-          icon,
-          color: isSelected ? AppTheme.primary : AppTheme.textSecondary,
-        ),
-        const SizedBox(height: 4),
-        Text(
-          label,
-          style: TextStyle(
-            color: isSelected ? AppTheme.primary : AppTheme.textSecondary,
-            fontSize: 10,
-            fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+  Widget _buildNavBarItem(IconData icon, String label, int index) {
+    final isSelected = _selectedNavIndex == index;
+    return GestureDetector(
+      onTap: () {
+        if (index == 3) {
+          context.push(AppRoutes.settings);
+        } else {
+          setState(() => _selectedNavIndex = index);
+        }
+      },
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            icon,
+            color: isSelected ? AppColors.primary : AppColors.textSecondary,
           ),
-        ),
-      ],
+          const SizedBox(height: 4),
+          Text(
+            label,
+            style: TextStyle(
+              color: isSelected ? AppColors.primary : AppColors.textSecondary,
+              fontSize: 10,
+              fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
