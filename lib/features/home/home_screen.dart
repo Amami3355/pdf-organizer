@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../l10n/app_localizations.dart';
-import '../../config/theme.dart';
+
 import '../../config/routes.dart';
 import 'widgets/quick_action_button.dart';
 import 'widgets/document_card.dart';
@@ -149,37 +149,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         ),
       ),
       
-      // Floating Action Button
-      floatingActionButton: Container(
-        height: 64,
-        width: 64,
-        decoration: const BoxDecoration(
-          shape: BoxShape.circle,
-          gradient: AppColors.primaryGradient,
-          boxShadow: [
-            BoxShadow(
-              color: Color(0x400056D2),
-              blurRadius: 16,
-              offset: Offset(0, 8),
-            ),
-          ],
-        ),
-        child: FloatingActionButton(
-          onPressed: () {},
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          child: const Icon(Icons.document_scanner_outlined, size: 32, color: Colors.white),
-        ),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
+
       
       // Bottom Navigation Bar
       bottomNavigationBar: BottomAppBar(
         color: Theme.of(context).bottomAppBarTheme.color,
         elevation: 0,
-        child: Padding(
-          padding: const EdgeInsets.only(right: 80.0),
-          child: Row(
+        child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               _buildNavBarItem(Icons.home_filled, l10n.home, 0),
@@ -188,7 +164,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               _buildNavBarItem(Icons.settings_outlined, l10n.settings, 3),
             ],
           ),
-        ),
       ),
     );
   }

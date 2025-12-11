@@ -74,7 +74,7 @@ class EditorScreen extends ConsumerWidget {
           Align(
             alignment: Alignment.bottomCenter,
             child: Container(
-              margin: const EdgeInsets.only(bottom: 32, left: 24, right: 24),
+              margin: EdgeInsets.only(bottom: 32 + MediaQuery.paddingOf(context).bottom, left: 24, right: 24),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(50),
                 child: BackdropFilter(
