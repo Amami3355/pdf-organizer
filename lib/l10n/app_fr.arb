@@ -1,0 +1,90 @@
+{
+  "@@locale": "fr",
+  "@@last_modified": "2025-12-11",
+  
+  "appName": "PDF Organizer",
+
+  "goodMorning": "Bonjour",
+  "goodAfternoon": "Bon après-midi",
+  "goodEvening": "Bonsoir",
+  
+  "greeting": "Bonsoir, {name}",
+
+  "newScansToday": "Vous avez {count} nouveaux scans aujourd'hui",
+
+  "searchPlaceholder": "Rechercher documents, PDFs, OCR",
+  "scanNew": "Scanner",
+  "import": "Importer",
+  "tools": "Outils",
+  "recentDocuments": "Documents récents",
+  "seeAll": "Voir tout",
+
+  "home": "Accueil",
+  "files": "Fichiers",
+  "settings": "Paramètres",
+
+  "export": "Exporter",
+  "addPage": "AJOUTER PAGE",
+  "sign": "Signer",
+  "compress": "Compresser",
+  "extract": "Extraire",
+  "more": "Plus",
+  "pages": "{count} Pages",
+
+  "settingsTitle": "Paramètres",
+  "purchases": "Achats",
+  "upgradeToPro": "Passer à Pro",
+  "unlockAllFeatures": "Débloquer toutes les fonctionnalités",
+  "restorePurchases": "Restaurer les achats",
+  "purchasesRestoredSuccess": "Achats restaurés avec succès !",
+  "noPreviousPurchases": "Aucun achat précédent trouvé.",
+  
+  "general": "Général",
+  "rateApp": "Noter l'application",
+  "shareWithFriends": "Partager avec des amis",
+  "contactSupport": "Contacter le support",
+  
+  "legal": "Mentions légales",
+  "privacyPolicy": "Politique de confidentialité",
+  "termsOfService": "Conditions d'utilisation",
+
+  "moreAppsByUs": "NOS AUTRES APPLICATIONS",
+  
+  "proUser": "Utilisateur Pro",
+  "allFeaturesUnlocked": "Toutes les fonctionnalités débloquées",
+
+  "unlockProTitle": "Débloquer {appName} Pro",
+  "oneTimePayment": "Paiement unique. Accès à vie.",
+  "getLifetimeAccess": "Obtenir l'accès à vie",
+  "thankYouPurchase": "Merci pour votre achat !",
+  "purchaseCancelledOrUnavailable": "Achat annulé ou indisponible",
+  "restoring": "Restauration...",
+
+  "featureUnlimitedPdf": "Traitement PDF illimité",
+  "featureCloudSync": "Synchronisation cloud multi-appareils",
+  "featureAdvancedEncryption": "Chiffrement avancé",
+  "featurePrioritySupport": "Support prioritaire",
+  "featureFreeUpdates": "Mises à jour gratuites à vie",
+
+  "skip": "Passer",
+  "continue_": "Continuer",
+  "getStarted": "Commencer",
+
+  "onboardingTitle1": "Scanner des documents",
+  "onboardingDesc1": "Scannez rapidement des documents avec votre appareil photo et convertissez-les en PDF haute qualité.",
+  "onboardingTitle2": "Organiser les fichiers",
+  "onboardingDesc2": "Gardez tous vos documents organisés avec des dossiers, des tags et une recherche intelligente.",
+  "onboardingTitle3": "Éditer et signer",
+  "onboardingDesc3": "Ajoutez des signatures, des annotations et fusionnez plusieurs PDFs facilement.",
+  "onboardingTitle4": "Synchroniser partout",
+  "onboardingDesc4": "Accédez à vos documents depuis n'importe quel appareil avec une synchronisation cloud sécurisée.",
+
+  "statusSynced": "SYNCHRONISÉ",
+  "statusOcrReady": "OCR PRÊT",
+  "statusSecured": "SÉCURISÉ",
+
+  "minsAgo": "il y a {count} min",
+  "hourAgo": "il y a 1 heure",
+  "yesterday": "Hier",
+  "daysAgo": "il y a {count} jours"
+}

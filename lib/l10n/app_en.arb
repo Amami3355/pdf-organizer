@@ -1,0 +1,142 @@
+{
+  "@@locale": "en",
+  "@@last_modified": "2025-12-11",
+  
+  "appName": "PDF Organizer",
+  "@appName": {
+    "description": "The name of the application"
+  },
+
+  "goodMorning": "Good morning",
+  "@goodMorning": {
+    "description": "Morning greeting"
+  },
+  "goodAfternoon": "Good afternoon",
+  "goodEvening": "Good evening",
+  
+  "greeting": "Good evening, {name}",
+  "@greeting": {
+    "description": "Personalized greeting",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Alex"
+      }
+    }
+  },
+
+  "newScansToday": "You have {count} new scans today",
+  "@newScansToday": {
+    "description": "Number of new scans today",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "3"
+      }
+    }
+  },
+
+  "searchPlaceholder": "Search documents, PDFs, OCR",
+  "scanNew": "Scan New",
+  "import": "Import",
+  "tools": "Tools",
+  "recentDocuments": "Recent Documents",
+  "seeAll": "See All",
+
+  "home": "Home",
+  "files": "Files",
+  "settings": "Settings",
+
+  "export": "Export",
+  "addPage": "ADD PAGE",
+  "sign": "Sign",
+  "compress": "Compress",
+  "extract": "Extract",
+  "more": "More",
+  "pages": "{count} Pages",
+  "@pages": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+
+  "settingsTitle": "Settings",
+  "purchases": "Purchases",
+  "upgradeToPro": "Upgrade to Pro",
+  "unlockAllFeatures": "Unlock all features",
+  "restorePurchases": "Restore Purchases",
+  "purchasesRestoredSuccess": "Purchases restored successfully!",
+  "noPreviousPurchases": "No previous purchases found.",
+  
+  "general": "General",
+  "rateApp": "Rate the App",
+  "shareWithFriends": "Share with Friends",
+  "contactSupport": "Contact Support",
+  
+  "legal": "Legal",
+  "privacyPolicy": "Privacy Policy",
+  "termsOfService": "Terms of Service",
+
+  "moreAppsByUs": "MORE APPS BY US",
+  
+  "proUser": "Pro User",
+  "allFeaturesUnlocked": "All features unlocked",
+
+  "unlockProTitle": "Unlock {appName} Pro",
+  "@unlockProTitle": {
+    "placeholders": {
+      "appName": {
+        "type": "String"
+      }
+    }
+  },
+  "oneTimePayment": "One-time payment. Lifetime access.",
+  "getLifetimeAccess": "Get Lifetime Access",
+  "thankYouPurchase": "Thank you for your purchase!",
+  "purchaseCancelledOrUnavailable": "Purchase cancelled or unavailable",
+  "restoring": "Restoring...",
+
+  "featureUnlimitedPdf": "Unlimited PDF processing",
+  "featureCloudSync": "Cloud sync across devices",
+  "featureAdvancedEncryption": "Advanced encryption",
+  "featurePrioritySupport": "Priority support",
+  "featureFreeUpdates": "Free lifetime updates",
+
+  "skip": "Skip",
+  "continue_": "Continue",
+  "getStarted": "Get Started",
+
+  "onboardingTitle1": "Scan Documents",
+  "onboardingDesc1": "Quickly scan documents with your camera and convert them to high-quality PDFs.",
+  "onboardingTitle2": "Organize Files",
+  "onboardingDesc2": "Keep all your documents organized with folders, tags, and smart search.",
+  "onboardingTitle3": "Edit & Sign",
+  "onboardingDesc3": "Add signatures, annotations, and merge multiple PDFs with ease.",
+  "onboardingTitle4": "Sync Everywhere",
+  "onboardingDesc4": "Access your documents from any device with secure cloud sync.",
+
+  "statusSynced": "SYNCED",
+  "statusOcrReady": "OCR READY",
+  "statusSecured": "SECURED",
+
+  "minsAgo": "{count} mins ago",
+  "@minsAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "hourAgo": "1 hour ago",
+  "yesterday": "Yesterday",
+  "daysAgo": "{count} days ago",
+  "@daysAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
+}

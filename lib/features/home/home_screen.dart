@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import '../../l10n/app_localizations.dart';
 import '../../config/theme.dart';
 import '../../config/routes.dart';
 import 'widgets/quick_action_button.dart';
@@ -22,6 +23,8 @@ class _HomeScreenState extends State<HomeScreen> {
   
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    
     return Scaffold(
       backgroundColor: AppColors.background,
       body: SafeArea(
@@ -39,12 +42,12 @@ class _HomeScreenState extends State<HomeScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Good evening, Alex',
+                        l10n.greeting('Alex'),
                         style: Theme.of(context).textTheme.headlineMedium,
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        'You have 3 new scans today',
+                        l10n.newScansToday(3),
                         style: Theme.of(context).textTheme.bodyMedium,
                       ),
                     ],
@@ -67,7 +70,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: TextField(
                   decoration: InputDecoration(
                     prefixIcon: const Icon(Icons.search, color: AppColors.textSecondary),
-                    hintText: 'Search documents, PDFs, OCR',
+                    hintText: l10n.searchPlaceholder,
                     suffixIcon: IconButton(
                       icon: const Icon(Icons.tune, color: AppColors.primary),
                       onPressed: () {},
@@ -84,19 +87,19 @@ class _HomeScreenState extends State<HomeScreen> {
                 children: [
                   QuickActionButton(
                     icon: Icons.camera_alt,
-                    label: 'Scan New',
+                    label: l10n.scanNew,
                     onTap: () {},
                   ),
                   const SizedBox(width: 12),
                   QuickActionButton(
                     icon: Icons.cloud_upload,
-                    label: 'Import',
+                    label: l10n.import,
                     onTap: () {},
                   ),
                   const SizedBox(width: 12),
                   QuickActionButton(
                     icon: Icons.build,
-                    label: 'Tools',
+                    label: l10n.tools,
                     onTap: () {},
                   ),
                 ],
@@ -108,13 +111,13 @@ class _HomeScreenState extends State<HomeScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'Recent Documents',
+                    l10n.recentDocuments,
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
                   TextButton(
                     onPressed: () {},
                     child: Text(
-                      'See All',
+                      l10n.seeAll,
                       style: Theme.of(context).textTheme.labelSmall?.copyWith(
                         color: AppColors.primary,
                       ),
@@ -173,10 +176,10 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              _buildNavBarItem(Icons.home_filled, 'Home', 0),
-              _buildNavBarItem(Icons.folder_open, 'Files', 1),
-              _buildNavBarItem(Icons.build_circle_outlined, 'Tools', 2),
-              _buildNavBarItem(Icons.settings_outlined, 'Settings', 3),
+              _buildNavBarItem(Icons.home_filled, l10n.home, 0),
+              _buildNavBarItem(Icons.folder_open, l10n.files, 1),
+              _buildNavBarItem(Icons.build_circle_outlined, l10n.tools, 2),
+              _buildNavBarItem(Icons.settings_outlined, l10n.settings, 3),
             ],
           ),
         ),

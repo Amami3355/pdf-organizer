@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:in_app_review/in_app_review.dart';
+import '../../l10n/app_localizations.dart';
 import '../../config/theme.dart';
 import '../../config/routes.dart';
 import '../../config/constants.dart';
@@ -21,6 +22,8 @@ class SettingsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
@@ -31,7 +34,7 @@ class SettingsScreen extends StatelessWidget {
           onPressed: () => context.pop(),
         ),
         title: Text(
-          'Settings',
+          l10n.settingsTitle,
           style: Theme.of(context).textTheme.titleLarge,
         ),
         centerTitle: true,
@@ -42,46 +45,46 @@ class SettingsScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Pro Status Banner
-            _buildProBanner(context),
+            _buildProBanner(context, l10n),
             
             // Purchases Section
             SettingsSection(
-              title: 'Purchases',
+              title: l10n.purchases,
               children: [
                 SettingsTile(
                   icon: Icons.workspace_premium,
-                  title: 'Upgrade to Pro',
-                  subtitle: 'Unlock all features',
+                  title: l10n.upgradeToPro,
+                  subtitle: l10n.unlockAllFeatures,
                   iconColor: Colors.amber,
                   onTap: () => context.push(AppRoutes.paywall),
                 ),
                 SettingsTile(
                   icon: Icons.restore,
-                  title: 'Restore Purchases',
-                  onTap: () => _restorePurchases(context),
+                  title: l10n.restorePurchases,
+                  onTap: () => _restorePurchases(context, l10n),
                 ),
               ],
             ),
             
             // General Section
             SettingsSection(
-              title: 'General',
+              title: l10n.general,
               children: [
                 SettingsTile(
                   icon: Icons.star_rate,
-                  title: 'Rate the App',
+                  title: l10n.rateApp,
                   iconColor: Colors.orange,
                   onTap: _rateApp,
                 ),
                 SettingsTile(
                   icon: Icons.share,
-                  title: 'Share with Friends',
+                  title: l10n.shareWithFriends,
                   iconColor: AppColors.primary,
                   onTap: _shareApp,
                 ),
                 SettingsTile(
                   icon: Icons.email_outlined,
-                  title: 'Contact Support',
+                  title: l10n.contactSupport,
                   onTap: _contactSupport,
                 ),
               ],
@@ -89,16 +92,16 @@ class SettingsScreen extends StatelessWidget {
             
             // Legal Section
             SettingsSection(
-              title: 'Legal',
+              title: l10n.legal,
               children: [
                 SettingsTile(
                   icon: Icons.privacy_tip_outlined,
-                  title: 'Privacy Policy',
+                  title: l10n.privacyPolicy,
                   onTap: () => _openUrl(AppConstants.privacyPolicyUrl),
                 ),
                 SettingsTile(
                   icon: Icons.description_outlined,
-                  title: 'Terms of Service',
+                  title: l10n.termsOfService,
                   onTap: () => _openUrl(AppConstants.termsOfServiceUrl),
                 ),
               ],
@@ -106,14 +109,14 @@ class SettingsScreen extends StatelessWidget {
             
             // Cross-Promo Section
             const SizedBox(height: 24),
-            _buildCrossPromoSection(context),
+            _buildCrossPromoSection(context, l10n),
             
             // Version
             const SizedBox(height: 32),
             Center(
               child: Text(
                 '${AppConstants.appName} v${AppConstants.appVersion}',
-                style: TextStyle(
+                style: const TextStyle(
                   color: AppColors.textSecondary,
                   fontSize: 12,
                 ),
@@ -126,7 +129,7 @@ class SettingsScreen extends StatelessWidget {
     );
   }
   
-  Widget _buildProBanner(BuildContext context) {
+  Widget _buildProBanner(BuildContext context, AppLocalizations l10n) {
     if (PurchaseService.instance.isPro) {
       return Container(
         margin: const EdgeInsets.only(bottom: 16),
@@ -137,24 +140,24 @@ class SettingsScreen extends StatelessWidget {
           ),
           borderRadius: BorderRadius.circular(16),
         ),
-        child: const Row(
+        child: Row(
           children: [
-            Icon(Icons.verified, color: Colors.white, size: 32),
-            SizedBox(width: 16),
+            const Icon(Icons.verified, color: Colors.white, size: 32),
+            const SizedBox(width: 16),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Pro User',
-                  style: TextStyle(
+                  l10n.proUser,
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
                 Text(
-                  'All features unlocked',
-                  style: TextStyle(
+                  l10n.allFeaturesUnlocked,
+                  style: const TextStyle(
                     color: Colors.white70,
                     fontSize: 14,
                   ),
@@ -168,7 +171,7 @@ class SettingsScreen extends StatelessWidget {
     return const SizedBox.shrink();
   }
   
-  Widget _buildCrossPromoSection(BuildContext context) {
+  Widget _buildCrossPromoSection(BuildContext context, AppLocalizations l10n) {
     if (OtherApps.apps.isEmpty) return const SizedBox.shrink();
     
     return Column(
@@ -177,8 +180,8 @@ class SettingsScreen extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.only(left: 4, bottom: 12),
           child: Text(
-            'MORE APPS BY US',
-            style: TextStyle(
+            l10n.moreAppsByUs,
+            style: const TextStyle(
               color: AppColors.textSecondary,
               fontSize: 12,
               fontWeight: FontWeight.w600,
@@ -212,15 +215,15 @@ class SettingsScreen extends StatelessWidget {
     );
   }
   
-  Future<void> _restorePurchases(BuildContext context) async {
+  Future<void> _restorePurchases(BuildContext context, AppLocalizations l10n) async {
     final restored = await PurchaseService.instance.restore();
     if (context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
             restored 
-                ? 'Purchases restored successfully!' 
-                : 'No previous purchases found.',
+                ? l10n.purchasesRestoredSuccess
+                : l10n.noPreviousPurchases,
           ),
         ),
       );

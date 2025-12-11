@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import '../../l10n/app_localizations.dart';
 import '../../config/theme.dart';
 import '../../config/routes.dart';
 import '../../core/widgets/primary_button.dart';
@@ -19,29 +20,6 @@ class OnboardingScreen extends StatefulWidget {
 class _OnboardingScreenState extends State<OnboardingScreen> {
   final PageController _pageController = PageController();
   int _currentPage = 0;
-  
-  final List<_OnboardingPage> _pages = [
-    _OnboardingPage(
-      icon: Icons.document_scanner,
-      title: 'Scan Documents',
-      description: 'Quickly scan documents with your camera and convert them to high-quality PDFs.',
-    ),
-    _OnboardingPage(
-      icon: Icons.folder_copy,
-      title: 'Organize Files',
-      description: 'Keep all your documents organized with folders, tags, and smart search.',
-    ),
-    _OnboardingPage(
-      icon: Icons.edit_document,
-      title: 'Edit & Sign',
-      description: 'Add signatures, annotations, and merge multiple PDFs with ease.',
-    ),
-    _OnboardingPage(
-      icon: Icons.cloud_sync,
-      title: 'Sync Everywhere',
-      description: 'Access your documents from any device with secure cloud sync.',
-    ),
-  ];
 
   @override
   void dispose() {
@@ -51,6 +29,31 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    
+    final pages = [
+      _OnboardingPage(
+        icon: Icons.document_scanner,
+        title: l10n.onboardingTitle1,
+        description: l10n.onboardingDesc1,
+      ),
+      _OnboardingPage(
+        icon: Icons.folder_copy,
+        title: l10n.onboardingTitle2,
+        description: l10n.onboardingDesc2,
+      ),
+      _OnboardingPage(
+        icon: Icons.edit_document,
+        title: l10n.onboardingTitle3,
+        description: l10n.onboardingDesc3,
+      ),
+      _OnboardingPage(
+        icon: Icons.cloud_sync,
+        title: l10n.onboardingTitle4,
+        description: l10n.onboardingDesc4,
+      ),
+    ];
+    
     return Scaffold(
       backgroundColor: AppColors.background,
       body: SafeArea(
@@ -61,9 +64,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               alignment: Alignment.topRight,
               child: TextButton(
                 onPressed: _finishOnboarding,
-                child: const Text(
-                  'Skip',
-                  style: TextStyle(
+                child: Text(
+                  l10n.skip,
+                  style: const TextStyle(
                     color: AppColors.textSecondary,
                     fontSize: 16,
                   ),
@@ -75,12 +78,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             Expanded(
               child: PageView.builder(
                 controller: _pageController,
-                itemCount: _pages.length,
+                itemCount: pages.length,
                 onPageChanged: (index) {
                   setState(() => _currentPage = index);
                 },
                 itemBuilder: (context, index) {
-                  return _buildPage(_pages[index]);
+                  return _buildPage(pages[index]);
                 },
               ),
             ),
@@ -89,7 +92,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: List.generate(
-                _pages.length,
+                pages.length,
                 (index) => _buildDot(index),
               ),
             ),
@@ -98,13 +101,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             // Buttons
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: _currentPage == _pages.length - 1
+              child: _currentPage == pages.length - 1
                   ? PrimaryButton(
-                      label: 'Get Started',
+                      label: l10n.getStarted,
                       onPressed: _finishOnboarding,
                     )
                   : PrimaryButton(
-                      label: 'Continue',
+                      label: l10n.continue_,
                       onPressed: () {
                         _pageController.nextPage(
                           duration: const Duration(milliseconds: 300),
@@ -157,7 +160,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           const SizedBox(height: 16),
           Text(
             page.description,
-            style: TextStyle(
+            style: const TextStyle(
               color: AppColors.textSecondary,
               fontSize: 16,
               height: 1.5,

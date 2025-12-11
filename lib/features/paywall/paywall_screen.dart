@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import '../../l10n/app_localizations.dart';
 import '../../config/theme.dart';
 import '../../config/constants.dart';
 import '../../core/widgets/primary_button.dart';
@@ -22,6 +23,8 @@ class _PaywallScreenState extends State<PaywallScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    
     return Scaffold(
       backgroundColor: AppColors.background,
       body: SafeArea(
@@ -68,7 +71,7 @@ class _PaywallScreenState extends State<PaywallScreen> {
                     
                     // Title
                     Text(
-                      'Unlock ${AppConstants.appName} Pro',
+                      l10n.unlockProTitle(AppConstants.appName),
                       style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
@@ -78,8 +81,8 @@ class _PaywallScreenState extends State<PaywallScreen> {
                     
                     // Subtitle
                     Text(
-                      'One-time payment. Lifetime access.',
-                      style: TextStyle(
+                      l10n.oneTimePayment,
+                      style: const TextStyle(
                         color: AppColors.textSecondary,
                         fontSize: 16,
                       ),
@@ -88,11 +91,11 @@ class _PaywallScreenState extends State<PaywallScreen> {
                     const SizedBox(height: 40),
                     
                     // Features list
-                    _buildFeatureItem(Icons.all_inclusive, 'Unlimited PDF processing'),
-                    _buildFeatureItem(Icons.cloud_sync, 'Cloud sync across devices'),
-                    _buildFeatureItem(Icons.security, 'Advanced encryption'),
-                    _buildFeatureItem(Icons.support_agent, 'Priority support'),
-                    _buildFeatureItem(Icons.update, 'Free lifetime updates'),
+                    _buildFeatureItem(Icons.all_inclusive, l10n.featureUnlimitedPdf),
+                    _buildFeatureItem(Icons.cloud_sync, l10n.featureCloudSync),
+                    _buildFeatureItem(Icons.security, l10n.featureAdvancedEncryption),
+                    _buildFeatureItem(Icons.support_agent, l10n.featurePrioritySupport),
+                    _buildFeatureItem(Icons.update, l10n.featureFreeUpdates),
                     
                     const SizedBox(height: 40),
                   ],
@@ -106,7 +109,7 @@ class _PaywallScreenState extends State<PaywallScreen> {
               child: Column(
                 children: [
                   PrimaryButton(
-                    label: 'Get Lifetime Access',
+                    label: l10n.getLifetimeAccess,
                     icon: Icons.lock_open,
                     isLoading: _isLoading,
                     onPressed: _purchase,
@@ -114,9 +117,9 @@ class _PaywallScreenState extends State<PaywallScreen> {
                   const SizedBox(height: 12),
                   TextButton(
                     onPressed: _restore,
-                    child: const Text(
-                      'Restore Purchases',
-                      style: TextStyle(
+                    child: Text(
+                      l10n.restorePurchases,
+                      style: const TextStyle(
                         color: AppColors.textSecondary,
                         fontSize: 14,
                       ),
@@ -162,6 +165,7 @@ class _PaywallScreenState extends State<PaywallScreen> {
   }
   
   Future<void> _purchase() async {
+    final l10n = AppLocalizations.of(context)!;
     setState(() => _isLoading = true);
     
     try {
@@ -170,12 +174,12 @@ class _PaywallScreenState extends State<PaywallScreen> {
       if (mounted) {
         if (success) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Thank you for your purchase!')),
+            SnackBar(content: Text(l10n.thankYouPurchase)),
           );
           context.pop();
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Purchase cancelled or unavailable')),
+            SnackBar(content: Text(l10n.purchaseCancelledOrUnavailable)),
           );
         }
       }
@@ -187,7 +191,8 @@ class _PaywallScreenState extends State<PaywallScreen> {
   }
   
   Future<void> _restore() async {
-    LoadingOverlay.show(context, message: 'Restoring...');
+    final l10n = AppLocalizations.of(context)!;
+    LoadingOverlay.show(context, message: l10n.restoring);
     
     try {
       final restored = await PurchaseService.instance.restore();
@@ -199,8 +204,8 @@ class _PaywallScreenState extends State<PaywallScreen> {
           SnackBar(
             content: Text(
               restored 
-                  ? 'Purchases restored successfully!' 
-                  : 'No previous purchases found.',
+                  ? l10n.purchasesRestoredSuccess 
+                  : l10n.noPreviousPurchases,
             ),
           ),
         );

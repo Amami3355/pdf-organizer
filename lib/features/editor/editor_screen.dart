@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:ui';
+import '../../l10n/app_localizations.dart';
 import '../../config/theme.dart';
 
 /// ✏️ Editor Screen
@@ -11,6 +12,8 @@ class EditorScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
@@ -27,7 +30,7 @@ class EditorScreen extends StatelessWidget {
               style: Theme.of(context).textTheme.titleMedium,
             ),
             Text(
-              '3 Pages • 2.4 MB',
+              '${l10n.pages(3)} • 2.4 MB',
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontSize: 12),
             ),
           ],
@@ -36,9 +39,9 @@ class EditorScreen extends StatelessWidget {
         actions: [
           TextButton(
             onPressed: () {},
-            child: const Text(
-              'Export',
-              style: TextStyle(
+            child: Text(
+              l10n.export,
+              style: const TextStyle(
                 color: AppColors.primary,
                 fontWeight: FontWeight.bold,
                 fontSize: 16,
@@ -60,7 +63,7 @@ class EditorScreen extends StatelessWidget {
                 _buildPageCard(context, 1, false),
                 _buildPageCard(context, 2, false),
                 _buildPageCard(context, 3, true),
-                _buildAddPageCard(context),
+                _buildAddPageCard(context, l10n),
               ],
             ),
           ),
@@ -94,10 +97,10 @@ class EditorScreen extends StatelessWidget {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        _buildToolbarItem(Icons.edit_outlined, 'Sign'),
-                        _buildToolbarItem(Icons.compress, 'Compress'),
-                        _buildToolbarItem(Icons.crop, 'Extract'),
-                        _buildToolbarItem(Icons.more_horiz, 'More'),
+                        _buildToolbarItem(Icons.edit_outlined, l10n.sign),
+                        _buildToolbarItem(Icons.compress, l10n.compress),
+                        _buildToolbarItem(Icons.crop, l10n.extract),
+                        _buildToolbarItem(Icons.more_horiz, l10n.more),
                       ],
                     ),
                   ),
@@ -175,7 +178,7 @@ class EditorScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildAddPageCard(BuildContext context) {
+  Widget _buildAddPageCard(BuildContext context, AppLocalizations l10n) {
     return Column(
       children: [
         Expanded(
@@ -203,7 +206,7 @@ class EditorScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'ADD PAGE',
+                      l10n.addPage,
                       style: Theme.of(context).textTheme.labelSmall?.copyWith(
                         color: AppColors.primary,
                         fontWeight: FontWeight.bold,
