@@ -8,6 +8,7 @@ import 'config/constants.dart';
 import 'core/services/storage_service.dart';
 import 'core/services/purchase_service.dart';
 import 'core/services/analytics_service.dart';
+import 'core/services/providers.dart';
 
 /// 🏭 PDF Organizer - Micro-SaaS Factory Architecture
 /// 
@@ -29,15 +30,23 @@ void main() async {
   runApp(const ProviderScope(child: MyApp()));
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends ConsumerWidget {
   const MyApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    // Watch theme mode for reactive theme switching
+    final themeMode = ref.watch(themeProvider);
+    
     return MaterialApp.router(
       title: AppConstants.appName,
       debugShowCheckedModeBanner: false,
-      theme: AppTheme.darkTheme,
+      
+      // 🎨 Dynamic theme support
+      theme: AppTheme.lightTheme,
+      darkTheme: AppTheme.darkTheme,
+      themeMode: themeMode,
+      
       routerConfig: appRouter,
       
       // 🌍 Internationalization

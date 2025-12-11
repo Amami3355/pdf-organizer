@@ -94,6 +94,23 @@ class SettingsScreen extends ConsumerWidget {
               ],
             ),
             
+            // Appearance Section
+            SettingsSection(
+              title: l10n.appearance,
+              children: [
+                SettingsTileToggle(
+                  icon: Icons.dark_mode,
+                  title: l10n.darkMode,
+                  subtitle: l10n.darkModeSubtitle,
+                  iconColor: Colors.deepPurple,
+                  value: ref.watch(isDarkModeProvider),
+                  onChanged: (value) {
+                    ref.read(themeProvider.notifier).toggle();
+                  },
+                ),
+              ],
+            ),
+            
             // Legal Section
             SettingsSection(
               title: l10n.legal,

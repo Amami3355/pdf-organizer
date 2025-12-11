@@ -296,6 +296,24 @@ abstract class AppLocalizations {
   /// **'Contact Support'**
   String get contactSupport;
 
+  /// No description provided for @appearance.
+  ///
+  /// In en, this message translates to:
+  /// **'Appearance'**
+  String get appearance;
+
+  /// No description provided for @darkMode.
+  ///
+  /// In en, this message translates to:
+  /// **'Dark Mode'**
+  String get darkMode;
+
+  /// No description provided for @darkModeSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Switch between light and dark themes'**
+  String get darkModeSubtitle;
+
   /// No description provided for @legal.
   ///
   /// In en, this message translates to:

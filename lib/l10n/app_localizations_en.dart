@@ -114,6 +114,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get contactSupport => 'Contact Support';
 
   @override
+  String get appearance => 'Appearance';
+
+  @override
+  String get darkMode => 'Dark Mode';
+
+  @override
+  String get darkModeSubtitle => 'Switch between light and dark themes';
+
+  @override
   String get legal => 'Legal';
 
   @override

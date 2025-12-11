@@ -44,6 +44,10 @@
   "shareWithFriends": "Partager avec des amis",
   "contactSupport": "Contacter le support",
   
+  "appearance": "Apparence",
+  "darkMode": "Mode sombre",
+  "darkModeSubtitle": "Basculer entre les thèmes clair et sombre",
+  
   "legal": "Mentions légales",
   "privacyPolicy": "Politique de confidentialité",
   "termsOfService": "Conditions d'utilisation",

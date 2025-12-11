@@ -11,10 +11,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Riverpod** state management (replacing Provider)
 - `purchaseProvider` and `isProProvider` for reactive Pro status
 - All screens now use `ConsumerWidget` / `ConsumerStatefulWidget`
+- **Light Mode** theme with dynamic switching
+- `themeProvider` and `isDarkModeProvider` for reactive theme state
+- Dark/Light mode toggle in Settings > Appearance section
 
 ### Changed
 - Migrated from `Provider` to `flutter_riverpod: ^2.6.1`
 - `main.dart` now wraps app with `ProviderScope`
+- `MyApp` converted to `ConsumerWidget` for theme reactivity
 
 ### Planned
 - OCR text recognition

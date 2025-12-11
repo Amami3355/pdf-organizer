@@ -75,6 +75,10 @@
   "shareWithFriends": "Share with Friends",
   "contactSupport": "Contact Support",
   
+  "appearance": "Appearance",
+  "darkMode": "Dark Mode",
+  "darkModeSubtitle": "Switch between light and dark themes",
+  
   "legal": "Legal",
   "privacyPolicy": "Privacy Policy",
   "termsOfService": "Terms of Service",

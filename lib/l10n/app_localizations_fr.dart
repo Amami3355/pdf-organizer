@@ -114,6 +114,15 @@ class AppLocalizationsFr extends AppLocalizations {
   String get contactSupport => 'Contacter le support';
 
   @override
+  String get appearance => 'Apparence';
+
+  @override
+  String get darkMode => 'Mode sombre';
+
+  @override
+  String get darkModeSubtitle => 'Basculer entre les thèmes clair et sombre';
+
+  @override
   String get legal => 'Mentions légales';
 
   @override
