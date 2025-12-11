@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../l10n/app_localizations.dart';
 
 import '../../config/routes.dart';
+import '../../core/widgets/app_bottom_nav_bar.dart';
 import 'widgets/quick_action_button.dart';
 import 'widgets/document_card.dart';
 import 'data/dummy_data.dart';
@@ -152,52 +153,20 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
       
       // Bottom Navigation Bar
-      bottomNavigationBar: BottomAppBar(
-        color: Theme.of(context).bottomAppBarTheme.color,
-        elevation: 0,
-        child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              _buildNavBarItem(Icons.home_filled, l10n.home, 0),
-              _buildNavBarItem(Icons.folder_open, l10n.files, 1),
-              _buildNavBarItem(Icons.build_circle_outlined, l10n.tools, 2),
-              _buildNavBarItem(Icons.settings_outlined, l10n.settings, 3),
-            ],
-          ),
-      ),
-    );
-  }
-  
-  Widget _buildNavBarItem(IconData icon, String label, int index) {
-    final isSelected = _selectedNavIndex == index;
-    final color = isSelected 
-        ? Theme.of(context).primaryColor 
-        : Theme.of(context).iconTheme.color?.withValues(alpha: 0.5) ?? Colors.grey;
-        
-    return GestureDetector(
-      onTap: () {
-        if (index == 3) {
-          context.push(AppRoutes.settings);
-        } else {
-          setState(() => _selectedNavIndex = index);
-        }
-      },
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            icon,
-            color: color,
-          ),
-          const SizedBox(height: 4),
-          Text(
-            label,
-            style: TextStyle(
-              color: color,
-              fontSize: 10,
-              fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
-            ),
-          ),
+      bottomNavigationBar: AppBottomNavBar(
+        selectedIndex: _selectedNavIndex,
+        onItemTapped: (index) {
+          if (index == 3) {
+            context.push(AppRoutes.settings);
+          } else {
+            setState(() => _selectedNavIndex = index);
+          }
+        },
+        items: [
+          AppBottomNavItem(icon: Icons.home_filled, label: l10n.home),
+          AppBottomNavItem(icon: Icons.folder_open, label: l10n.files),
+          AppBottomNavItem(icon: Icons.build_circle_outlined, label: l10n.tools),
+          AppBottomNavItem(icon: Icons.settings_outlined, label: l10n.settings),
         ],
       ),
     );

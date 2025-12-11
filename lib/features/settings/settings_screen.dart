@@ -11,6 +11,7 @@ import '../../config/routes.dart';
 import '../../config/constants.dart';
 import '../../core/widgets/settings_tile.dart';
 import '../../core/widgets/app_card.dart';
+import '../../core/widgets/app_bottom_nav_bar.dart';
 import '../../core/services/providers.dart';
 
 /// ⚙️ Settings Screen
@@ -41,6 +42,20 @@ class SettingsScreen extends ConsumerWidget {
           style: Theme.of(context).textTheme.titleLarge,
         ),
         centerTitle: true,
+      ),
+      bottomNavigationBar: AppBottomNavBar(
+        selectedIndex: 3, // Settings tab
+        onItemTapped: (index) {
+          if (index != 3) {
+            context.go(AppRoutes.home);
+          }
+        },
+        items: [
+          AppBottomNavItem(icon: Icons.home_filled, label: l10n.home),
+          AppBottomNavItem(icon: Icons.folder_open, label: l10n.files),
+          AppBottomNavItem(icon: Icons.build_circle_outlined, label: l10n.tools),
+          AppBottomNavItem(icon: Icons.settings_outlined, label: l10n.settings),
+        ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 16),

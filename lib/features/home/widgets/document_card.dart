@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../../config/theme.dart';
 import '../../../config/routes.dart';
+import '../../../core/widgets/status_chip.dart';
 import '../models/document_model.dart';
 
 class DocumentCard extends StatelessWidget {
@@ -14,44 +15,6 @@ class DocumentCard extends StatelessWidget {
     this.onTap,
   });
 
-  Color _getStatusBgColor(String status) {
-    switch (status) {
-      case 'SYNCED':
-        return AppColors.statusSyncedBg;
-      case 'OCR READY':
-        return AppColors.statusOcrBg;
-      case 'SECURED':
-        return AppColors.statusSecuredBg;
-      default:
-        return AppColors.surfaceLight;
-    }
-  }
-
-  Color _getStatusFgColor(String status) {
-    switch (status) {
-      case 'SYNCED':
-        return AppColors.statusSyncedFg;
-      case 'OCR READY':
-        return AppColors.statusOcrFg;
-      case 'SECURED':
-        return AppColors.statusSecuredFg;
-      default:
-        return AppColors.textSecondary;
-    }
-  }
-
-  IconData _getStatusIcon(String status) {
-    switch (status) {
-      case 'SYNCED':
-        return Icons.sync;
-      case 'OCR READY':
-        return Icons.text_fields;
-      case 'SECURED':
-        return Icons.lock_outline;
-      default:
-        return Icons.circle;
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -114,33 +77,7 @@ class DocumentCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   // Status Chip
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: _getStatusBgColor(document.status),
-                      borderRadius: BorderRadius.circular(6),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          _getStatusIcon(document.status),
-                          size: 10,
-                          color: _getStatusFgColor(document.status),
-                        ),
-                        const SizedBox(width: 4),
-                        Text(
-                          document.status,
-                          style: TextStyle(
-                            color: _getStatusFgColor(document.status),
-                            fontSize: 10,
-                            fontWeight: FontWeight.bold,
-                            letterSpacing: 0.5,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+                  StatusChip(status: document.status),
                 ],
               ),
             ),

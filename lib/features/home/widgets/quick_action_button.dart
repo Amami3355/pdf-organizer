@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../../config/theme.dart';
 
 class QuickActionButton extends StatelessWidget {
   final IconData icon;
@@ -21,7 +20,7 @@ class QuickActionButton extends StatelessWidget {
         child: Container(
           height: 100,
           decoration: BoxDecoration(
-            color: AppColors.surface,
+            color: Theme.of(context).cardColor,
             borderRadius: BorderRadius.circular(16),
           ),
           child: Column(
@@ -30,16 +29,16 @@ class QuickActionButton extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: AppColors.primary.withValues(alpha: 0.1),
+                  color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
                   shape: BoxShape.circle,
                 ),
-                child: Icon(icon, color: AppColors.primary, size: 28),
+                child: Icon(icon, color: Theme.of(context).primaryColor, size: 28),
               ),
               const SizedBox(height: 12),
               Text(
                 label,
                 style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                  color: AppColors.textSecondary,
+                  color: Theme.of(context).hintColor,
                   fontWeight: FontWeight.w600,
                 ),
               ),

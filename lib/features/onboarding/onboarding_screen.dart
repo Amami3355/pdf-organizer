@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../l10n/app_localizations.dart';
-import '../../config/theme.dart';
 import '../../config/routes.dart';
 import '../../core/widgets/primary_button.dart';
+import '../../core/widgets/page_indicator.dart';
 import '../../core/services/storage_service.dart';
 
 /// 📱 Onboarding Screen
@@ -57,7 +57,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     ];
     
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: Column(
           children: [
@@ -68,8 +68,8 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                 onPressed: _finishOnboarding,
                 child: Text(
                   l10n.skip,
-                  style: const TextStyle(
-                    color: AppColors.textSecondary,
+                  style: TextStyle(
+                    color: Theme.of(context).hintColor,
                     fontSize: 16,
                   ),
                 ),
@@ -91,12 +91,9 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
             ),
             
             // Dots indicator
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: List.generate(
-                pages.length,
-                (index) => _buildDot(index),
-              ),
+            PageIndicator(
+              pageCount: pages.length,
+              currentPage: _currentPage,
             ),
             const SizedBox(height: 40),
             
@@ -135,11 +132,13 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
             width: 120,
             height: 120,
             decoration: BoxDecoration(
-              gradient: AppColors.primaryGradient,
+            gradient: LinearGradient(
+              colors: [Theme.of(context).primaryColor, Theme.of(context).primaryColor.withValues(alpha: 0.7)],
+            ),
               borderRadius: BorderRadius.circular(32),
               boxShadow: [
                 BoxShadow(
-                  color: AppColors.primary.withValues(alpha: 0.4),
+                color: Theme.of(context).primaryColor.withValues(alpha: 0.4),
                   blurRadius: 32,
                   offset: const Offset(0, 16),
                 ),
@@ -162,8 +161,8 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
           const SizedBox(height: 16),
           Text(
             page.description,
-            style: const TextStyle(
-              color: AppColors.textSecondary,
+            style: TextStyle(
+            color: Theme.of(context).hintColor,
               fontSize: 16,
               height: 1.5,
             ),
@@ -174,19 +173,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     );
   }
   
-  Widget _buildDot(int index) {
-    final isActive = _currentPage == index;
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 200),
-      margin: const EdgeInsets.symmetric(horizontal: 4),
-      width: isActive ? 24 : 8,
-      height: 8,
-      decoration: BoxDecoration(
-        color: isActive ? AppColors.primary : AppColors.surfaceLight,
-        borderRadius: BorderRadius.circular(4),
-      ),
-    );
-  }
+
   
   Future<void> _finishOnboarding() async {
     await StorageService.instance.setHasSeenOnboarding(true);

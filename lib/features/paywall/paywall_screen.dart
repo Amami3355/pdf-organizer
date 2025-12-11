@@ -28,7 +28,7 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
     final l10n = AppLocalizations.of(context)!;
     
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: Column(
           children: [
@@ -37,7 +37,7 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
               alignment: Alignment.topRight,
               child: IconButton(
                 onPressed: () => context.pop(),
-                icon: const Icon(Icons.close, color: AppColors.textSecondary),
+                icon: Icon(Icons.close, color: Theme.of(context).hintColor),
               ),
             ),
             
@@ -57,7 +57,7 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
                         borderRadius: BorderRadius.circular(24),
                         boxShadow: [
                           BoxShadow(
-                            color: AppColors.primary.withValues(alpha: 0.4),
+                        color: Theme.of(context).primaryColor.withValues(alpha: 0.4),
                             blurRadius: 24,
                             offset: const Offset(0, 12),
                           ),
@@ -84,8 +84,8 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
                     // Subtitle
                     Text(
                       l10n.oneTimePayment,
-                      style: const TextStyle(
-                        color: AppColors.textSecondary,
+                      style: TextStyle(
+                        color: Theme.of(context).hintColor,
                         fontSize: 16,
                       ),
                       textAlign: TextAlign.center,
@@ -93,11 +93,11 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
                     const SizedBox(height: 40),
                     
                     // Features list
-                    _buildFeatureItem(Icons.all_inclusive, l10n.featureUnlimitedPdf),
-                    _buildFeatureItem(Icons.cloud_sync, l10n.featureCloudSync),
-                    _buildFeatureItem(Icons.security, l10n.featureAdvancedEncryption),
-                    _buildFeatureItem(Icons.support_agent, l10n.featurePrioritySupport),
-                    _buildFeatureItem(Icons.update, l10n.featureFreeUpdates),
+                    _buildFeatureItem(context, Icons.all_inclusive, l10n.featureUnlimitedPdf),
+                    _buildFeatureItem(context, Icons.cloud_sync, l10n.featureCloudSync),
+                    _buildFeatureItem(context, Icons.security, l10n.featureAdvancedEncryption),
+                    _buildFeatureItem(context, Icons.support_agent, l10n.featurePrioritySupport),
+                    _buildFeatureItem(context, Icons.update, l10n.featureFreeUpdates),
                     
                     const SizedBox(height: 40),
                   ],
@@ -121,8 +121,8 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
                     onPressed: _restore,
                     child: Text(
                       l10n.restorePurchases,
-                      style: const TextStyle(
-                        color: AppColors.textSecondary,
+                      style: TextStyle(
+                        color: Theme.of(context).hintColor,
                         fontSize: 14,
                       ),
                     ),
@@ -136,7 +136,7 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
     );
   }
   
-  Widget _buildFeatureItem(IconData icon, String text) {
+  Widget _buildFeatureItem(BuildContext context, IconData icon, String text) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),
       child: Row(
@@ -145,17 +145,17 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
             width: 40,
             height: 40,
             decoration: BoxDecoration(
-              color: AppColors.primary.withValues(alpha: 0.15),
+              color: Theme.of(context).primaryColor.withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(10),
             ),
-            child: Icon(icon, color: AppColors.primary, size: 20),
+            child: Icon(icon, color: Theme.of(context).primaryColor, size: 20),
           ),
           const SizedBox(width: 16),
           Expanded(
             child: Text(
               text,
-              style: const TextStyle(
-                color: AppColors.textPrimary,
+              style: TextStyle(
+                color: Theme.of(context).textTheme.bodyLarge?.color,
                 fontSize: 16,
               ),
             ),

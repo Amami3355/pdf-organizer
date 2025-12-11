@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'dart:ui';
 import '../../l10n/app_localizations.dart';
-import '../../config/theme.dart';
+import '../../core/widgets/glass_toolbar.dart';
+import '../../core/painters/dashed_border_painter.dart';
 
 /// ✏️ Editor Screen
 /// 
@@ -17,12 +17,12 @@ class EditorScreen extends ConsumerWidget {
     final l10n = AppLocalizations.of(context)!;
     
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, color: AppColors.textPrimary, size: 20),
+          icon: Icon(Icons.arrow_back_ios_new, color: Theme.of(context).iconTheme.color, size: 20),
           onPressed: () => Navigator.pop(context),
         ),
         title: Column(
@@ -43,8 +43,8 @@ class EditorScreen extends ConsumerWidget {
             onPressed: () {},
             child: Text(
               l10n.export,
-              style: const TextStyle(
-                color: AppColors.primary,
+              style: TextStyle(
+                color: Theme.of(context).primaryColor,
                 fontWeight: FontWeight.bold,
                 fontSize: 16,
               ),
@@ -73,41 +73,13 @@ class EditorScreen extends ConsumerWidget {
           // Bottom Toolbar with Glassmorphism
           Align(
             alignment: Alignment.bottomCenter,
-            child: Container(
-              margin: EdgeInsets.only(bottom: 32 + MediaQuery.paddingOf(context).bottom, left: 24, right: 24),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(50),
-                child: BackdropFilter(
-                  filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF1E2633).withValues(alpha: 0.85),
-                      borderRadius: BorderRadius.circular(50),
-                      border: Border.all(
-                        color: Colors.white.withValues(alpha: 0.1),
-                        width: 1,
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.3),
-                          blurRadius: 10,
-                          offset: const Offset(0, 5),
-                        ),
-                      ],
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        _buildToolbarItem(Icons.edit_outlined, l10n.sign),
-                        _buildToolbarItem(Icons.compress, l10n.compress),
-                        _buildToolbarItem(Icons.crop, l10n.extract),
-                        _buildToolbarItem(Icons.more_horiz, l10n.more),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
+            child: GlassToolbar(
+              items: [
+                GlassToolbarItem(icon: Icons.edit_outlined, label: l10n.sign),
+                GlassToolbarItem(icon: Icons.compress, label: l10n.compress),
+                GlassToolbarItem(icon: Icons.crop, label: l10n.extract),
+                GlassToolbarItem(icon: Icons.more_horiz, label: l10n.more),
+              ],
             ),
           ),
         ],
@@ -133,7 +105,7 @@ class EditorScreen extends ConsumerWidget {
                     ),
                   ],
                   border: isSelected
-                      ? Border.all(color: AppColors.primary, width: 3)
+                      ? Border.all(color: Theme.of(context).primaryColor, width: 3)
                       : null,
                 ),
                 child: Padding(
@@ -157,8 +129,8 @@ class EditorScreen extends ConsumerWidget {
                   top: 8,
                   right: 8,
                   child: Container(
-                    decoration: const BoxDecoration(
-                      color: AppColors.primary,
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).primaryColor,
                       shape: BoxShape.circle,
                     ),
                     padding: const EdgeInsets.all(4),
@@ -172,7 +144,7 @@ class EditorScreen extends ConsumerWidget {
         Text(
           '$pageNumber',
           style: TextStyle(
-            color: isSelected ? AppColors.primary : AppColors.textSecondary,
+            color: isSelected ? Theme.of(context).primaryColor : Theme.of(context).hintColor,
             fontWeight: FontWeight.w600,
           ),
         ),
@@ -186,7 +158,7 @@ class EditorScreen extends ConsumerWidget {
         Expanded(
           child: CustomPaint(
             painter: DashedBorderPainter(
-              color: AppColors.textSecondary.withValues(alpha: 0.5),
+              color: Theme.of(context).hintColor.withValues(alpha: 0.5),
               strokeWidth: 1.5,
               gap: 5,
             ),
@@ -200,17 +172,17 @@ class EditorScreen extends ConsumerWidget {
                   children: [
                     Container(
                       padding: const EdgeInsets.all(8),
-                      decoration: const BoxDecoration(
+                      decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: AppColors.surfaceLight,
+                        color: Theme.of(context).cardColor,
                       ),
-                      child: const Icon(Icons.add, color: AppColors.primary, size: 24),
+                      child: Icon(Icons.add, color: Theme.of(context).primaryColor, size: 24),
                     ),
                     const SizedBox(height: 8),
                     Text(
                       l10n.addPage,
                       style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                        color: AppColors.primary,
+                        color: Theme.of(context).primaryColor,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -225,91 +197,4 @@ class EditorScreen extends ConsumerWidget {
       ],
     );
   }
-
-  Widget _buildToolbarItem(IconData icon, String label) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Icon(icon, color: AppColors.textSecondary),
-        const SizedBox(height: 4),
-        Text(
-          label,
-          style: const TextStyle(
-            color: AppColors.textSecondary,
-            fontSize: 10,
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class DashedBorderPainter extends CustomPainter {
-  final Color color;
-  final double strokeWidth;
-  final double gap;
-
-  DashedBorderPainter({
-    required this.color,
-    this.strokeWidth = 1.0,
-    this.gap = 5.0,
-  });
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final Paint paint = Paint()
-      ..color = color
-      ..strokeWidth = strokeWidth
-      ..style = PaintingStyle.stroke;
-
-    final double dashWidth = gap;
-    final double dashSpace = gap;
-    
-    // Top
-    double currentX = 0;
-    while (currentX < size.width) {
-      canvas.drawLine(
-        Offset(currentX, 0),
-        Offset(currentX + dashWidth, 0),
-        paint,
-      );
-      currentX += dashWidth + dashSpace;
-    }
-    
-    // Right
-    double currentY = 0;
-    while (currentY < size.height) {
-      canvas.drawLine(
-        Offset(size.width, currentY),
-        Offset(size.width, currentY + dashWidth),
-        paint,
-      );
-      currentY += dashWidth + dashSpace;
-    }
-
-    // Bottom
-    currentX = size.width;
-    while (currentX > 0) {
-      canvas.drawLine(
-        Offset(currentX, size.height),
-        Offset(currentX - dashWidth, size.height),
-        paint,
-      );
-      currentX -= dashWidth + dashSpace;
-    }
-
-    // Left
-    currentY = size.height;
-    while (currentY > 0) {
-      canvas.drawLine(
-        Offset(0, currentY),
-        Offset(0, currentY - dashWidth),
-        paint,
-      );
-      currentY -= dashWidth + dashSpace;
-    }
-  }
-
-  @override
-  bool shouldRepaint(CustomPainter oldDelegate) => false;
 }
