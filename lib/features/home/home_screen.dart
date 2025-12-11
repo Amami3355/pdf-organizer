@@ -95,7 +95,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   QuickActionButton(
                     icon: Icons.camera_alt,
                     label: l10n.scanNew,
-                    onTap: () {},
+                    onTap: () => context.push(AppRoutes.camera),
                   ),
                   const SizedBox(width: 12),
                   QuickActionButton(

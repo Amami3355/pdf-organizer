@@ -4,6 +4,7 @@ import '../features/editor/editor_screen.dart';
 import '../features/settings/settings_screen.dart';
 import '../features/paywall/paywall_screen.dart';
 import '../features/onboarding/onboarding_screen.dart';
+import '../features/camera/camera_screen.dart';
 
 /// 🧭 Micro-SaaS Factory: Router Configuration
 /// 
@@ -16,6 +17,7 @@ class AppRoutes {
   static const String settings = '/settings';
   static const String paywall = '/paywall';
   static const String onboarding = '/onboarding';
+  static const String camera = '/camera';
 }
 
 final GoRouter appRouter = GoRouter(
@@ -40,6 +42,10 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
       path: AppRoutes.onboarding,
       builder: (context, state) => const OnboardingScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.camera,
+      builder: (context, state) => const CameraScreen(),
     ),
   ],
 );
