@@ -18,37 +18,63 @@
 
 ## Phase 1 : Camera Module 📷
 
-**Objectif :** Capturer des documents via la caméra avec détection automatique des bords.
+**Objectif :** Capturer des documents via la caméra avec détection automatique des bords en temps réel.
 
-**Packages requis :**
-- `camera: ^0.10.5+9`
-- `image: ^4.1.7`
-- `google_mlkit_document_scanner: ^0.3.0` (alternative native)
+### Stack technique
+
+| Package | Rôle |
+|---------|------|
+| `camerawesome: ^2.0.0` | UI caméra 100% customisable |
+| `google_mlkit_document_scanner: ^0.3.0` | Détection des bords (Android) |
+| Note: iOS utilise `VNDocumentCameraViewController` nativement |
+
+### Architecture
+
+```
+┌─────────────────────────────────────────────────────────┐
+│                    CameraAwesomeBuilder                  │
+│  ┌─────────────────────────────────────────────────────┐│
+│  │              Camera Preview Stream                   ││
+│  │  ┌─────────────────────────────────────────────┐    ││
+│  │  │     CustomPaint (Polygon Overlay)           │    ││
+│  │  │     - 4 corner points from ML Kit           │    ││
+│  │  │     - Animated path drawing                  │    ││
+│  │  └─────────────────────────────────────────────┘    ││
+│  └─────────────────────────────────────────────────────┘│
+│  ┌────────────┐  ┌────────────┐  ┌────────────────────┐ │
+│  │   Flash    │  │  Capture   │  │  Gallery/Batch     │ │
+│  └────────────┘  └────────────┘  └────────────────────┘ │
+└─────────────────────────────────────────────────────────┘
+```
 
 ### Checklist
 
-- [ ] **1.1 Setup Camera**
+- [ ] **1.1 Setup CameraAwesome**
+  - [ ] Ajouter `camerawesome: ^2.0.0` au pubspec.yaml
   - [ ] Ajouter les permissions caméra dans `AndroidManifest.xml` et `Info.plist`
   - [ ] Créer `lib/features/camera/camera_screen.dart`
-  - [ ] Implémenter l'initialisation de la caméra avec `CameraController`
+  - [ ] Implémenter `CameraAwesomeBuilder` avec UI custom
   - [ ] Ajouter le toggle caméra avant/arrière
   - [ ] Implémenter le contrôle du flash (auto/on/off)
 
-- [ ] **1.2 Capture d'image**
+- [ ] **1.2 Edge Detection Overlay (Real-time)**
+  - [ ] Ajouter `google_mlkit_document_scanner: ^0.3.0`
+  - [ ] Créer `lib/features/camera/painters/document_overlay_painter.dart`
+  - [ ] Connecter `imageStream` de camerawesome à ML Kit
+  - [ ] Dessiner le polygon en overlay avec `CustomPaint`
+  - [ ] Ajouter animation fluide lors de la détection
+  - [ ] Feedback visuel (couleur verte) quand document stable
+
+- [ ] **1.3 Capture d'image**
   - [ ] Bouton de capture avec animation
+  - [ ] Appliquer perspective transform automatiquement après capture
   - [ ] Prévisualisation de l'image capturée
   - [ ] Option "Retake" ou "Confirm"
   - [ ] Sauvegarde temporaire dans le cache
 
-- [ ] **1.3 Auto Edge Detection**
-  - [ ] Intégrer une solution de détection de contours (OpenCV ou ML Kit)
-  - [ ] Afficher le rectangle de détection en overlay
-  - [ ] Permettre l'ajustement manuel des coins si nécessaire
-  - [ ] Feedback visuel quand un document est détecté
-
 - [ ] **1.4 Batch Scanning Mode**
   - [ ] Mode multi-page (continuer après chaque capture)
-  - [ ] Compteur de pages scannées
+  - [ ] Compteur de pages scannées avec miniatures
   - [ ] Bouton "Terminer le batch"
   - [ ] Navigation vers l'éditeur avec toutes les pages
 
@@ -190,14 +216,15 @@
 ## Dépendances à ajouter
 
 ```yaml
-# pubspec.yaml - À ajouter progressivement
+# pubspec.yaml - Stack recommandée
 
-# Phase 1 - Camera
-camera: ^0.10.5+9
+# Phase 1 - Camera (Custom UI + ML Kit)
+camerawesome: ^2.0.0
+google_mlkit_document_scanner: ^0.3.0
+
+# Phase 2 - Image Processing
 image: ^4.1.7
-
-# Phase 2 - Image Processing (optionnel pour OpenCV)
-# opencv_dart: ^1.0.0
+flutter_image_compress: ^2.1.0
 
 # Phase 4 - Export
 pdf: ^3.10.8
@@ -206,6 +233,7 @@ path_provider: ^2.1.2
 
 # Phase 5 - Pro Features
 google_mlkit_text_recognition: ^0.11.0
+signature: ^5.4.1
 ```
 
 ---
