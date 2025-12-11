@@ -61,11 +61,18 @@ class AppConstants {
 
 ### Usage
 
-```dart
-import 'core/services/purchase_service.dart';
+The app uses **Riverpod** for reactive state management. All screens extend `ConsumerWidget` or `ConsumerStatefulWidget`.
 
-// Check Pro status (cached, works offline)
-if (PurchaseService.instance.isPro) {
+```dart
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'core/services/providers.dart';
+
+// In a ConsumerWidget/ConsumerStatefulWidget:
+
+// Watch Pro status (reactive - UI updates automatically when status changes)
+final isPro = ref.watch(isProProvider);
+
+if (isPro) {
   // Show Pro features
 } else {
   // Show limited features or paywall
@@ -73,7 +80,7 @@ if (PurchaseService.instance.isPro) {
 
 // Trigger purchase
 onPressed: () async {
-  final success = await PurchaseService.instance.purchaseLifetime();
+  final success = await ref.read(purchaseProvider.notifier).purchaseLifetime();
   if (success) {
     // Show success message
     Navigator.pop(context);
@@ -82,7 +89,7 @@ onPressed: () async {
 
 // Restore purchases
 onPressed: () async {
-  final restored = await PurchaseService.instance.restore();
+  final restored = await ref.read(purchaseProvider.notifier).restore();
   if (restored) {
     // Pro restored successfully
   } else {
@@ -90,6 +97,8 @@ onPressed: () async {
   }
 }
 ```
+
+> **Key difference from direct service access**: Using `ref.watch(isProProvider)` makes the UI automatically rebuild when the Pro status changes, without needing manual `setState()` calls.
 
 ---
 

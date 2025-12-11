@@ -128,22 +128,31 @@ dart fix --apply
 
 ## Services Usage
 
-### PurchaseService
+### PurchaseService (via Riverpod)
+
+All screens use Riverpod for reactive state management. Extend `ConsumerWidget` or `ConsumerStatefulWidget`.
 
 ```dart
-import 'core/services/purchase_service.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'core/services/providers.dart';
 
-// Check Pro status (cached, works offline)
-if (PurchaseService.instance.isPro) {
+// In a ConsumerWidget or ConsumerStatefulWidget:
+
+// Watch Pro status (reactive - UI updates automatically)
+final isPro = ref.watch(isProProvider);
+
+if (isPro) {
   // Show Pro features
 }
 
 // Trigger purchase
-final success = await PurchaseService.instance.purchaseLifetime();
+final success = await ref.read(purchaseProvider.notifier).purchaseLifetime();
 
 // Restore purchases
-final restored = await PurchaseService.instance.restore();
+final restored = await ref.read(purchaseProvider.notifier).restore();
 ```
+
+> **Note**: `ref.watch()` for reactive UI updates, `ref.read()` for one-time actions.
 
 ### StorageService
 

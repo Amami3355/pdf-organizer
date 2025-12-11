@@ -42,9 +42,10 @@ lib/
 │
 ├── core/                      # 🔧 Reusable Infrastructure
 │   ├── services/
-│   │   ├── purchase_service.dart   # RevenueCat integration
-│   │   ├── storage_service.dart    # SharedPreferences wrapper
-│   │   └── analytics_service.dart  # Analytics placeholder
+│   │   ├── providers.dart         # Riverpod providers (state management)
+│   │   ├── purchase_service.dart  # RevenueCat integration
+│   │   ├── storage_service.dart   # SharedPreferences wrapper
+│   │   └── analytics_service.dart # Analytics placeholder
 │   │
 │   └── widgets/
 │       ├── primary_button.dart     # CTA buttons with loading
@@ -144,11 +145,35 @@ class AppConstants {
 
 ## Core Layer
 
+### State Management (Riverpod)
+
+The app uses **Riverpod** for reactive state management. All screens extend `ConsumerWidget` or `ConsumerStatefulWidget`.
+
+#### Purchase Provider
+
+Reactive wrapper around PurchaseService.
+
+```dart
+// Watch pro status reactively - UI updates automatically
+final isPro = ref.watch(isProProvider);
+
+// Trigger purchase
+await ref.read(purchaseProvider.notifier).purchaseLifetime();
+
+// Restore purchases
+await ref.read(purchaseProvider.notifier).restore();
+```
+
+**Key Features:**
+- ✅ Reactive UI updates when pro status changes
+- ✅ Offline-first (caches Pro status via StorageService)
+- ✅ Compile-safe (no runtime provider errors)
+
 ### Services
 
 #### PurchaseService
 
-Singleton managing RevenueCat integration.
+Singleton managing RevenueCat integration (wrapped by Riverpod provider).
 
 ```dart
 class PurchaseService {

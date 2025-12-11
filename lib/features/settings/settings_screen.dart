@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:share_plus/share_plus.dart';
@@ -11,18 +12,21 @@ import '../../config/routes.dart';
 import '../../config/constants.dart';
 import '../../core/widgets/settings_tile.dart';
 import '../../core/widgets/app_card.dart';
-import '../../core/services/purchase_service.dart';
+import '../../core/services/providers.dart';
 
 /// ⚙️ Settings Screen
 /// 
 /// App settings with cross-promotion section.
+/// Uses Riverpod for reactive pro status.
 
-class SettingsScreen extends StatelessWidget {
+class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
+    // Watch pro status reactively - UI will update automatically when it changes
+    final isPro = ref.watch(isProProvider);
     
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -45,7 +49,7 @@ class SettingsScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Pro Status Banner
-            _buildProBanner(context, l10n),
+            _buildProBanner(context, l10n, isPro),
             
             // Purchases Section
             SettingsSection(
@@ -61,7 +65,7 @@ class SettingsScreen extends StatelessWidget {
                 SettingsTile(
                   icon: Icons.restore,
                   title: l10n.restorePurchases,
-                  onTap: () => _restorePurchases(context, l10n),
+                  onTap: () => _restorePurchases(context, ref, l10n),
                 ),
               ],
             ),
@@ -129,8 +133,8 @@ class SettingsScreen extends StatelessWidget {
     );
   }
   
-  Widget _buildProBanner(BuildContext context, AppLocalizations l10n) {
-    if (PurchaseService.instance.isPro) {
+  Widget _buildProBanner(BuildContext context, AppLocalizations l10n, bool isPro) {
+    if (isPro) {
       return Container(
         margin: const EdgeInsets.only(bottom: 16),
         padding: const EdgeInsets.all(16),
@@ -215,8 +219,9 @@ class SettingsScreen extends StatelessWidget {
     );
   }
   
-  Future<void> _restorePurchases(BuildContext context, AppLocalizations l10n) async {
-    final restored = await PurchaseService.instance.restore();
+  Future<void> _restorePurchases(BuildContext context, WidgetRef ref, AppLocalizations l10n) async {
+    // Use Riverpod provider instead of direct service call
+    final restored = await ref.read(purchaseProvider.notifier).restore();
     if (context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(

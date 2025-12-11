@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'dart:ui';
 import '../../l10n/app_localizations.dart';
 import '../../config/theme.dart';
@@ -6,12 +7,13 @@ import '../../config/theme.dart';
 /// ✏️ Editor Screen
 /// 
 /// PDF page management and editing tools.
+/// Uses Riverpod for consistency across the app.
 
-class EditorScreen extends StatelessWidget {
+class EditorScreen extends ConsumerWidget {
   const EditorScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
     
     return Scaffold(

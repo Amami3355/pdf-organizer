@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'l10n/app_localizations.dart';
 import 'config/theme.dart';
 import 'config/routes.dart';
@@ -10,7 +11,7 @@ import 'core/services/analytics_service.dart';
 
 /// 🏭 PDF Organizer - Micro-SaaS Factory Architecture
 /// 
-/// Entry point with service initialization and i18n support.
+/// Entry point with service initialization and Riverpod state management.
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -24,7 +25,8 @@ void main() async {
     await AnalyticsService.instance.init();
   }
   
-  runApp(const MyApp());
+  // Wrap app with ProviderScope for Riverpod
+  runApp(const ProviderScope(child: MyApp()));
 }
 
 class MyApp extends StatelessWidget {

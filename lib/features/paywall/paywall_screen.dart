@@ -1,24 +1,26 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../l10n/app_localizations.dart';
 import '../../config/theme.dart';
 import '../../config/constants.dart';
 import '../../core/widgets/primary_button.dart';
 import '../../core/widgets/loading_overlay.dart';
-import '../../core/services/purchase_service.dart';
+import '../../core/services/providers.dart';
 
 /// 💰 Paywall Screen
 /// 
 /// Lifetime purchase screen with features list.
+/// Uses Riverpod for reactive state management.
 
-class PaywallScreen extends StatefulWidget {
+class PaywallScreen extends ConsumerStatefulWidget {
   const PaywallScreen({super.key});
 
   @override
-  State<PaywallScreen> createState() => _PaywallScreenState();
+  ConsumerState<PaywallScreen> createState() => _PaywallScreenState();
 }
 
-class _PaywallScreenState extends State<PaywallScreen> {
+class _PaywallScreenState extends ConsumerState<PaywallScreen> {
   bool _isLoading = false;
 
   @override
@@ -169,7 +171,8 @@ class _PaywallScreenState extends State<PaywallScreen> {
     setState(() => _isLoading = true);
     
     try {
-      final success = await PurchaseService.instance.purchaseLifetime();
+      // Use Riverpod provider instead of direct service call
+      final success = await ref.read(purchaseProvider.notifier).purchaseLifetime();
       
       if (mounted) {
         if (success) {
@@ -195,7 +198,8 @@ class _PaywallScreenState extends State<PaywallScreen> {
     LoadingOverlay.show(context, message: l10n.restoring);
     
     try {
-      final restored = await PurchaseService.instance.restore();
+      // Use Riverpod provider instead of direct service call
+      final restored = await ref.read(purchaseProvider.notifier).restore();
       
       if (mounted) {
         LoadingOverlay.hide(context);

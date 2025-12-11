@@ -44,6 +44,7 @@ lib/
 
 ## 🛠️ Tech Stack
 
+- **State Management**: Riverpod
 - **Navigation**: GoRouter
 - **Payments**: RevenueCat
 - **Storage**: SharedPreferences
