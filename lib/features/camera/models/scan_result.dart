@@ -7,16 +7,18 @@ class ScanResult {
   final String imagePath;
   final List<ScanCorner>? detectedCorners;
   final DateTime capturedAt;
-  final ImageFilter appliedFilter;
+  final ScanFilter appliedFilter;
   final bool isPerspectiveCorrected;
+  final int rotation; // 0, 90, 180, 270
 
   const ScanResult({
     required this.id,
     required this.imagePath,
     this.detectedCorners,
     required this.capturedAt,
-    this.appliedFilter = ImageFilter.original,
+    this.appliedFilter = ScanFilter.original,
     this.isPerspectiveCorrected = false,
+    this.rotation = 0,
   });
 
   ScanResult copyWith({
@@ -24,8 +26,9 @@ class ScanResult {
     String? imagePath,
     List<ScanCorner>? detectedCorners,
     DateTime? capturedAt,
-    ImageFilter? appliedFilter,
+    ScanFilter? appliedFilter,
     bool? isPerspectiveCorrected,
+    int? rotation,
   }) {
     return ScanResult(
       id: id ?? this.id,
@@ -34,6 +37,7 @@ class ScanResult {
       capturedAt: capturedAt ?? this.capturedAt,
       appliedFilter: appliedFilter ?? this.appliedFilter,
       isPerspectiveCorrected: isPerspectiveCorrected ?? this.isPerspectiveCorrected,
+      rotation: rotation ?? this.rotation,
     );
   }
 }
@@ -50,7 +54,7 @@ class ScanCorner {
 }
 
 /// Available image filters
-enum ImageFilter {
+enum ScanFilter {
   original,
   blackAndWhite,
   magicColor,
@@ -58,29 +62,29 @@ enum ImageFilter {
 }
 
 /// Extension for filter display names
-extension ImageFilterExtension on ImageFilter {
+extension ScanFilterExtension on ScanFilter {
   String get displayName {
     switch (this) {
-      case ImageFilter.original:
+      case ScanFilter.original:
         return 'Original';
-      case ImageFilter.blackAndWhite:
+      case ScanFilter.blackAndWhite:
         return 'B&W';
-      case ImageFilter.magicColor:
+      case ScanFilter.magicColor:
         return 'Magic';
-      case ImageFilter.grayscale:
+      case ScanFilter.grayscale:
         return 'Gray';
     }
   }
 
   String get icon {
     switch (this) {
-      case ImageFilter.original:
+      case ScanFilter.original:
         return '📷';
-      case ImageFilter.blackAndWhite:
+      case ScanFilter.blackAndWhite:
         return '⬛';
-      case ImageFilter.magicColor:
+      case ScanFilter.magicColor:
         return '✨';
-      case ImageFilter.grayscale:
+      case ScanFilter.grayscale:
         return '🔲';
     }
   }

@@ -1,7 +1,7 @@
 # 🗺️ PDF Organizer - Roadmap d'Implémentation
 
 > Document de suivi pour l'implémentation des fonctionnalités MVP et Pro.  
-> Dernière mise à jour : 2025-12-11
+> Dernière mise à jour : 2025-12-11 (Mourad)
 
 ---
 
@@ -49,34 +49,34 @@
 
 ### Checklist
 
-- [ ] **1.1 Setup CameraAwesome**
-  - [ ] Ajouter `camerawesome: ^2.0.0` au pubspec.yaml
-  - [ ] Ajouter les permissions caméra dans `AndroidManifest.xml` et `Info.plist`
-  - [ ] Créer `lib/features/camera/camera_screen.dart`
-  - [ ] Implémenter `CameraAwesomeBuilder` avec UI custom
-  - [ ] Ajouter le toggle caméra avant/arrière
-  - [ ] Implémenter le contrôle du flash (auto/on/off)
+- [x] **1.1 Setup CameraAwesome**
+  - [x] Ajouter `camerawesome: ^2.0.0` au pubspec.yaml
+  - [x] Ajouter les permissions caméra dans `AndroidManifest.xml` et `Info.plist`
+  - [x] Créer `lib/features/camera/camera_screen.dart`
+  - [x] Implémenter `CameraAwesomeBuilder` avec UI custom
+  - [x] Ajouter le toggle caméra avant/arrière
+  - [x] Implémenter le contrôle du flash (auto/on/off)
 
-- [ ] **1.2 Edge Detection Overlay (Real-time)**
-  - [ ] Ajouter `google_mlkit_document_scanner: ^0.3.0`
-  - [ ] Créer `lib/features/camera/painters/document_overlay_painter.dart`
-  - [ ] Connecter `imageStream` de camerawesome à ML Kit
-  - [ ] Dessiner le polygon en overlay avec `CustomPaint`
-  - [ ] Ajouter animation fluide lors de la détection
-  - [ ] Feedback visuel (couleur verte) quand document stable
+- [x] **1.2 Edge Detection Overlay (Real-time)**
+  - [x] Ajouter `google_mlkit_document_scanner: ^0.3.0`
+  - [x] Créer `lib/features/camera/painters/document_overlay_painter.dart`
+  - [x] Connecter `imageStream` de camerawesome à ML Kit (Simulated for now)
+  - [x] Dessiner le polygon en overlay avec `CustomPaint`
+  - [x] Ajouter animation fluide lors de la détection
+  - [x] Feedback visuel (couleur verte) quand document stable
 
-- [ ] **1.3 Capture d'image**
-  - [ ] Bouton de capture avec animation
-  - [ ] Appliquer perspective transform automatiquement après capture
-  - [ ] Prévisualisation de l'image capturée
-  - [ ] Option "Retake" ou "Confirm"
-  - [ ] Sauvegarde temporaire dans le cache
+- [x] **1.3 Capture d'image**
+  - [x] Bouton de capture avec animation
+  - [ ] Appliquer perspective transform automatiquement après capture (Blocked by real ML Kit)
+  - [x] Prévisualisation de l'image capturée
+  - [x] Option "Retake" ou "Confirm"
+  - [x] Sauvegarde temporaire dans le cache
 
-- [ ] **1.4 Batch Scanning Mode**
-  - [ ] Mode multi-page (continuer après chaque capture)
-  - [ ] Compteur de pages scannées avec miniatures
-  - [ ] Bouton "Terminer le batch"
-  - [ ] Navigation vers l'éditeur avec toutes les pages
+- [x] **1.4 Batch Scanning Mode**
+  - [x] Mode multi-page (continuer après chaque capture)
+  - [x] Compteur de pages scannées avec miniatures
+  - [x] Bouton "Terminer le batch"
+  - [x] Navigation vers l'éditeur avec toutes les pages
 
 ---
 
@@ -91,22 +91,22 @@
 ### Checklist
 
 - [ ] **2.1 Perspective Transform**
-  - [ ] Créer `lib/core/services/image_processing_service.dart`
+  - [x] Créer `lib/core/services/image_processing_service.dart`
   - [ ] Implémenter la correction de perspective (4 points → rectangle)
   - [ ] Appliquer automatiquement après détection des bords
   - [ ] Option de recadrage manuel
 
-- [ ] **2.2 Filtres d'image**
-  - [ ] Créer `lib/features/camera/widgets/filter_selector.dart`
-  - [ ] Implémenter filtre **Original** (aucune modification)
-  - [ ] Implémenter filtre **Black & White** (seuillage adaptatif)
-  - [ ] Implémenter filtre **Magic Color** (amélioration du contraste)
-  - [ ] Implémenter filtre **Grayscale** (niveaux de gris)
-  - [ ] Prévisualisation en temps réel des filtres
+- [x] **2.2 Filtres d'image**
+  - [x] Créer `lib/features/camera/widgets/filter_selector.dart` (UI in EditPageScreen)
+  - [x] Implémenter filtre **Original** (aucune modification)
+  - [x] Implémenter filtre **Black & White** (seuillage adaptatif)
+  - [x] Implémenter filtre **Magic Color** (amélioration du contraste)
+  - [x] Implémenter filtre **Grayscale** (niveaux de gris)
+  - [x] Prévisualisation en temps réel des filtres
 
-- [ ] **2.3 Optimisations**
-  - [ ] Traitement en arrière-plan avec `compute()`
-  - [ ] Indicateur de chargement pendant le traitement
+- [x] **2.3 Optimisations**
+  - [x] Traitement en arrière-plan avec `compute()`
+  - [x] Indicateur de chargement pendant le traitement
   - [ ] Caching des images traitées
 
 ---
@@ -119,26 +119,26 @@
 
 ### Checklist
 
-- [ ] **3.1 Gestion des pages**
-  - [ ] Créer `lib/features/editor/models/document_page.dart`
-  - [ ] Créer `lib/features/editor/providers/editor_provider.dart` (Riverpod)
-  - [ ] Charger les images depuis le batch de scan
-  - [ ] Affichage en grille avec miniatures
+- [x] **3.1 Gestion des pages**
+  - [x] Créer `lib/features/editor/models/document_page.dart` (Using ScanResult)
+  - [x] Créer `lib/features/editor/providers/editor_provider.dart` (Riverpod)
+  - [x] Charger les images depuis le batch de scan
+  - [x] Affichage en grille avec miniatures
 
-- [ ] **3.2 Réorganisation (Drag & Drop)**
-  - [ ] Implémenter `ReorderableGridView` ou équivalent
-  - [ ] Animation de drag fluide
-  - [ ] Feedback visuel de la position cible
-  - [ ] Persistance de l'ordre
+- [x] **3.2 Réorganisation (Drag & Drop)**
+  - [x] Implémenter `ReorderableGridView` ou équivalent
+  - [x] Animation de drag fluide
+  - [x] Feedback visuel de la position cible
+  - [x] Persistance de l'ordre
 
-- [ ] **3.3 Actions sur les pages**
-  - [ ] **Rotation** : 90° horaire/anti-horaire
-  - [ ] **Crop** : Recadrage manuel avec resize handles
-  - [ ] **Delete** : Suppression avec confirmation
+- [x] **3.3 Actions sur les pages**
+  - [x] **Rotation** : 90° horaire/anti-horaire
+  - [ ] **Crop** : Recadrage manuel avec resize handles (Blocked)
+  - [x] **Delete** : Suppression avec confirmation
   - [ ] **Duplicate** : Copie d'une page
 
-- [ ] **3.4 Ajout de pages**
-  - [ ] Bouton "+" pour ajouter depuis la caméra
+- [x] **3.4 Ajout de pages**
+  - [x] Bouton "+" pour ajouter depuis la caméra
   - [ ] Option d'import depuis la galerie
   - [ ] Insertion à une position spécifique
 
@@ -156,11 +156,11 @@
 
 ### Checklist
 
-- [ ] **4.1 Génération PDF**
-  - [ ] Créer `lib/core/services/pdf_service.dart`
-  - [ ] Convertir les images en pages PDF
-  - [ ] Respecter l'orientation de chaque page
-  - [ ] Optimiser la taille du fichier (compression JPEG)
+- [x] **4.1 Génération PDF**
+  - [x] Créer `lib/core/services/pdf_service.dart`
+  - [x] Convertir les images en pages PDF
+  - [x] Respecter l'orientation de chaque page
+  - [x] Optimiser la taille du fichier (compression JPEG)
 
 - [ ] **4.2 Options d'export**
   - [ ] Créer `lib/features/export/export_options_sheet.dart`
@@ -168,11 +168,11 @@
   - [ ] Sélection du format de page (A4, Letter, Original)
   - [ ] Qualité d'image (Haute, Moyenne, Basse)
 
-- [ ] **4.3 Share Sheet**
-  - [ ] Intégrer `share_plus` pour le partage système
-  - [ ] Option "Sauvegarder dans Fichiers"
-  - [ ] Option "Envoyer par email"
-  - [ ] Prévisualisation avant partage (optionnel)
+- [x] **4.3 Share Sheet**
+  - [x] Intégrer `share_plus` pour le partage système
+  - [x] Option "Sauvegarder dans Fichiers"
+  - [x] Option "Envoyer par email"
+  - [x] Prévisualisation avant partage (optionnel)
 
 - [ ] **4.4 Historique des documents**
   - [ ] Sauvegarder les PDFs exportés localement

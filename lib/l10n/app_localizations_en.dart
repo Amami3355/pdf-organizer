@@ -76,6 +76,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get more => 'More';
 
   @override
+  String get delete => 'Delete';
+
+  @override
+  String get rotate => 'Rotate';
+
+  @override
+  String get deselect => 'Deselect';
+
+  @override
+  String get save => 'Save';
+
+  @override
   String pages(int count) {
     return '$count Pages';
   }

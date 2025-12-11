@@ -12,7 +12,7 @@ class ScanState {
   final bool isDocumentDetected;
   final bool isDocumentStable;
   final List<ScanCorner>? currentCorners;
-  final ImageFilter selectedFilter;
+  final ScanFilter selectedFilter;
   final bool isCapturing;
   final bool isBatchMode;
 
@@ -22,7 +22,7 @@ class ScanState {
     this.isDocumentDetected = false,
     this.isDocumentStable = false,
     this.currentCorners,
-    this.selectedFilter = ImageFilter.original,
+    this.selectedFilter = ScanFilter.original,
     this.isCapturing = false,
     this.isBatchMode = true,
   });
@@ -33,7 +33,7 @@ class ScanState {
     bool? isDocumentDetected,
     bool? isDocumentStable,
     List<ScanCorner>? currentCorners,
-    ImageFilter? selectedFilter,
+    ScanFilter? selectedFilter,
     bool? isCapturing,
     bool? isBatchMode,
   }) {
@@ -104,7 +104,7 @@ class ScanStateNotifier extends StateNotifier<ScanState> {
   }
 
   /// Update filter for a specific image
-  void updateImageFilter(String id, ImageFilter filter) {
+  void updateImageFilter(String id, ScanFilter filter) {
     state = state.copyWith(
       capturedImages: state.capturedImages.map((img) {
         if (img.id == id) {
@@ -116,7 +116,7 @@ class ScanStateNotifier extends StateNotifier<ScanState> {
   }
 
   /// Set selected filter for new captures
-  void setSelectedFilter(ImageFilter filter) {
+  void setSelectedFilter(ScanFilter filter) {
     state = state.copyWith(selectedFilter: filter);
   }
 

@@ -53,6 +53,10 @@
   "compress": "Compress",
   "extract": "Extract",
   "more": "More",
+  "delete": "Delete",
+  "rotate": "Rotate",
+  "deselect": "Deselect",
+  "save": "Save",
   "pages": "{count} Pages",
   "@pages": {
     "placeholders": {

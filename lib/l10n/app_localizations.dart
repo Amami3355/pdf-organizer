@@ -224,6 +224,30 @@ abstract class AppLocalizations {
   /// **'More'**
   String get more;
 
+  /// No description provided for @delete.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get delete;
+
+  /// No description provided for @rotate.
+  ///
+  /// In en, this message translates to:
+  /// **'Rotate'**
+  String get rotate;
+
+  /// No description provided for @deselect.
+  ///
+  /// In en, this message translates to:
+  /// **'Deselect'**
+  String get deselect;
+
+  /// No description provided for @save.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get save;
+
   /// No description provided for @pages.
   ///
   /// In en, this message translates to:

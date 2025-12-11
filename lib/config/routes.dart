@@ -1,6 +1,7 @@
 import 'package:go_router/go_router.dart';
 import '../features/home/home_screen.dart';
 import '../features/editor/editor_screen.dart';
+import '../features/editor/edit_page_screen.dart';
 import '../features/settings/settings_screen.dart';
 import '../features/paywall/paywall_screen.dart';
 import '../features/onboarding/onboarding_screen.dart';
@@ -18,6 +19,7 @@ class AppRoutes {
   static const String paywall = '/paywall';
   static const String onboarding = '/onboarding';
   static const String camera = '/camera';
+  static const String editPage = '/edit-page/:id'; // Added new route constant
 }
 
 final GoRouter appRouter = GoRouter(
@@ -30,6 +32,13 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
       path: AppRoutes.editor,
       builder: (context, state) => const EditorScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.editPage, // Added new route
+      builder: (context, state) {
+        final id = state.pathParameters['id']!;
+        return EditPageScreen(pageId: id);
+      },
     ),
     GoRoute(
       path: AppRoutes.settings,

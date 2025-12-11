@@ -9,6 +9,7 @@ import '../../l10n/app_localizations.dart';
 import 'models/scan_result.dart';
 import 'painters/document_overlay_painter.dart';
 import 'providers/camera_provider.dart';
+import 'services/edge_detection_service.dart';
 import 'widgets/camera_controls.dart';
 
 /// 📷 Camera Screen
@@ -30,7 +31,7 @@ class _CameraScreenState extends ConsumerState<CameraScreen>
   
   // Simulated document detection corners (will be replaced with ML Kit)
   List<Offset>? _detectedCorners;
-  final bool _isDocumentStable = false;
+  bool _isDocumentStable = false;
 
   @override
   void initState() {
@@ -78,8 +79,15 @@ class _CameraScreenState extends ConsumerState<CameraScreen>
   }
 
   void _navigateToEditor() {
-    // Navigate to editor with captured images
-    context.push(AppRoutes.editor);
+    // Check if we came from editor
+    final shouldPop = GoRouterState.of(context).uri.queryParameters['from'] == 'editor';
+    
+    if (shouldPop) {
+      context.pop();
+    } else {
+      // Allow replacement to avoid stacking too many pages and cameras
+      context.pushReplacement(AppRoutes.editor);
+    }
   }
 
   FlashMode _mapFlashMode(CameraFlashMode mode) {
@@ -116,7 +124,7 @@ class _CameraScreenState extends ConsumerState<CameraScreen>
               flashMode: _mapFlashMode(scanState.flashMode),
               aspectRatio: CameraAspectRatios.ratio_4_3,
             ),
-            previewFit: CameraPreviewFit.cover,
+            previewFit: CameraPreviewFit.contain,
             onMediaCaptureEvent: (event) {
               if (event.status == MediaCaptureStatus.success) {
                 final captureRequest = event.captureRequest;
@@ -129,6 +137,41 @@ class _CameraScreenState extends ConsumerState<CameraScreen>
                 }
               }
             },
+            onImageForAnalysis: (image) async {
+              final service = ref.read(edgeDetectionServiceProvider);
+              final corners = await service.detectEdges(image);
+              
+              if (mounted) {
+                setState(() {
+                  if (corners != null) {
+                    // Map normalized coordinates to screen size
+                    // Note: This simple mapping assumes the usage of the whole screen
+                    // and might need adjustment for aspect ratio differences.
+                    _detectedCorners = corners.map((c) => Offset(
+                      c.x * size.width, 
+                      c.y * size.height
+                    )).toList();
+                    _isDocumentStable = true; // Mock stability
+                  } else {
+                    _detectedCorners = null;
+                    _isDocumentStable = false;
+                  }
+                });
+                
+                // Update Riverpod state
+                ref.read(scanStateProvider.notifier).updateDocumentDetection(
+                  isDetected: corners != null,
+                  isStable: _isDocumentStable,
+                  corners: corners,
+                );
+              }
+            },
+            imageAnalysisConfig: AnalysisConfig(
+              androidOptions: const AndroidAnalysisOptions.nv21(
+                width: 1024,
+              ),
+              maxFramesPerSecond: 5, // Throttle analysis
+            ),
             topActionsBuilder: (state) => _buildTopBar(context, l10n, state),
             middleContentBuilder: (state) => _buildOverlay(size),
             bottomActionsBuilder: (state) => _buildBottomBar(context, scanState, state),
@@ -225,7 +268,7 @@ class _CameraScreenState extends ConsumerState<CameraScreen>
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
-                children: ImageFilter.values.map((filter) {
+                children: ScanFilter.values.map((filter) {
                   final isSelected = scanState.selectedFilter == filter;
                   return GestureDetector(
                     onTap: () => scanNotifier.setSelectedFilter(filter),
