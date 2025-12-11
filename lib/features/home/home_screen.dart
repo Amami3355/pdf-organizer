@@ -28,7 +28,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final l10n = AppLocalizations.of(context)!;
     
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20.0),
@@ -66,15 +66,19 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               // Search Bar
               Container(
                 decoration: BoxDecoration(
-                  color: AppColors.surface,
+                  color: Theme.of(context).cardColor,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: TextField(
+                  style: Theme.of(context).textTheme.bodyLarge,
                   decoration: InputDecoration(
-                    prefixIcon: const Icon(Icons.search, color: AppColors.textSecondary),
+                    prefixIcon: Icon(Icons.search, color: Theme.of(context).iconTheme.color?.withValues(alpha: 0.5)),
                     hintText: l10n.searchPlaceholder,
+                    hintStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: Theme.of(context).iconTheme.color?.withValues(alpha: 0.5),
+                    ),
                     suffixIcon: IconButton(
-                      icon: const Icon(Icons.tune, color: AppColors.primary),
+                      icon: Icon(Icons.tune, color: Theme.of(context).primaryColor),
                       onPressed: () {},
                     ),
                     border: InputBorder.none,
@@ -121,7 +125,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     child: Text(
                       l10n.seeAll,
                       style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                        color: AppColors.primary,
+                        color: Theme.of(context).primaryColor,
                       ),
                     ),
                   ),
@@ -171,7 +175,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       
       // Bottom Navigation Bar
       bottomNavigationBar: BottomAppBar(
-        color: AppColors.background,
+        color: Theme.of(context).bottomAppBarTheme.color,
         elevation: 0,
         child: Padding(
           padding: const EdgeInsets.only(right: 80.0),
@@ -191,6 +195,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   
   Widget _buildNavBarItem(IconData icon, String label, int index) {
     final isSelected = _selectedNavIndex == index;
+    final color = isSelected 
+        ? Theme.of(context).primaryColor 
+        : Theme.of(context).iconTheme.color?.withValues(alpha: 0.5) ?? Colors.grey;
+        
     return GestureDetector(
       onTap: () {
         if (index == 3) {
@@ -204,13 +212,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         children: [
           Icon(
             icon,
-            color: isSelected ? AppColors.primary : AppColors.textSecondary,
+            color: color,
           ),
           const SizedBox(height: 4),
           Text(
             label,
             style: TextStyle(
-              color: isSelected ? AppColors.primary : AppColors.textSecondary,
+              color: color,
               fontSize: 10,
               fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
             ),

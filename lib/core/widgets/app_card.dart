@@ -29,7 +29,7 @@ class AppCard extends StatelessWidget {
     final card = Container(
       margin: margin,
       decoration: BoxDecoration(
-        color: backgroundColor ?? AppColors.surface,
+        color: backgroundColor ?? Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(borderRadius),
       ),
       child: Padding(
@@ -69,15 +69,15 @@ class AppCardElevated extends StatelessWidget {
     return Container(
       margin: margin,
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: Colors.white.withValues(alpha: 0.05),
+          color: Theme.of(context).dividerColor.withValues(alpha: 0.1),
           width: 1,
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.2),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -121,7 +121,7 @@ class CrossPromoCard extends StatelessWidget {
         width: 140,
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: AppColors.surface,
+          color: Theme.of(context).cardColor,
           borderRadius: BorderRadius.circular(16),
         ),
         child: Column(
@@ -131,7 +131,7 @@ class CrossPromoCard extends StatelessWidget {
               width: 56,
               height: 56,
               decoration: BoxDecoration(
-                color: AppColors.surfaceLight,
+                color: Theme.of(context).cardTheme.shadowColor ?? AppColors.surfaceLight,
                 borderRadius: BorderRadius.circular(12),
               ),
               child: iconPath != null
@@ -139,15 +139,15 @@ class CrossPromoCard extends StatelessWidget {
                       borderRadius: BorderRadius.circular(12),
                       child: Image.asset(iconPath!, fit: BoxFit.cover),
                     )
-                  : const Icon(Icons.apps, color: AppColors.primary),
+                  : Icon(Icons.apps, color: Theme.of(context).primaryColor),
             ),
             const SizedBox(height: 12),
             Text(
               name,
-              style: const TextStyle(
-                color: AppColors.textPrimary,
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
+                color: Theme.of(context).textTheme.bodyLarge?.color,
               ),
               textAlign: TextAlign.center,
               maxLines: 1,
@@ -156,8 +156,7 @@ class CrossPromoCard extends StatelessWidget {
             const SizedBox(height: 4),
             Text(
               description,
-              style: TextStyle(
-                color: AppColors.textSecondary,
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                 fontSize: 11,
               ),
               textAlign: TextAlign.center,

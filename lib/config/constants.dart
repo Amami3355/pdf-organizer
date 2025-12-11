@@ -34,20 +34,5 @@ class AppConstants {
 /// 
 /// Add your other apps here for the "More Apps" section in Settings.
 class OtherApps {
-  static const List<Map<String, String>> apps = [
-    {
-      'name': 'QR Manager',
-      'icon': 'assets/icons/qr_icon.png',
-      'description': 'Scan & create QR codes',
-      'iosUrl': 'https://apps.apple.com/...',
-      'androidUrl': 'https://play.google.com/...',
-    },
-    {
-      'name': 'Photo Vault',
-      'icon': 'assets/icons/vault_icon.png',
-      'description': 'Secure your photos',
-      'iosUrl': 'https://apps.apple.com/...',
-      'androidUrl': 'https://play.google.com/...',
-    },
-  ];
+  static const List<Map<String, String>> apps = [];
 }

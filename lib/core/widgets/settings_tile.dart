@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../config/theme.dart';
+
 
 /// ⚙️ Micro-SaaS Factory: Settings Tile
 /// 
@@ -42,12 +42,12 @@ class SettingsTile extends StatelessWidget {
                 width: 40,
                 height: 40,
                 decoration: BoxDecoration(
-                  color: iconBackgroundColor ?? AppColors.surfaceLight,
+                  color: iconBackgroundColor ?? Theme.of(context).cardTheme.shadowColor ?? Colors.grey.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Icon(
                   icon,
-                  color: iconColor ?? AppColors.primary,
+                  color: iconColor ?? Theme.of(context).primaryColor,
                   size: 20,
                 ),
               ),
@@ -60,8 +60,7 @@ class SettingsTile extends StatelessWidget {
                   children: [
                     Text(
                       title,
-                      style: const TextStyle(
-                        color: AppColors.textPrimary,
+                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                         fontSize: 16,
                         fontWeight: FontWeight.w500,
                       ),
@@ -70,8 +69,7 @@ class SettingsTile extends StatelessWidget {
                       const SizedBox(height: 2),
                       Text(
                         subtitle!,
-                        style: TextStyle(
-                          color: AppColors.textSecondary,
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                           fontSize: 13,
                         ),
                       ),
@@ -82,9 +80,9 @@ class SettingsTile extends StatelessWidget {
               
               // Trailing
               trailing ?? 
-                  const Icon(
+                  Icon(
                     Icons.chevron_right,
-                    color: AppColors.textSecondary,
+                    color: Theme.of(context).iconTheme.color?.withValues(alpha: 0.3),
                   ),
             ],
           ),
@@ -126,7 +124,7 @@ class SettingsTileToggle extends StatelessWidget {
         onChanged: onChanged,
         thumbColor: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.selected)) {
-            return AppColors.primary;
+            return Theme.of(context).primaryColor;
           }
           return null;
         }),
@@ -155,8 +153,8 @@ class SettingsSection extends StatelessWidget {
           padding: const EdgeInsets.only(left: 16, bottom: 8, top: 24),
           child: Text(
             title.toUpperCase(),
-            style: TextStyle(
-              color: AppColors.textSecondary,
+            style: Theme.of(context).textTheme.labelSmall?.copyWith(
+              color: Theme.of(context).textTheme.bodyMedium?.color,
               fontSize: 12,
               fontWeight: FontWeight.w600,
               letterSpacing: 0.5,
@@ -165,7 +163,7 @@ class SettingsSection extends StatelessWidget {
         ),
         Container(
           decoration: BoxDecoration(
-            color: AppColors.surface,
+            color: Theme.of(context).cardColor,
             borderRadius: BorderRadius.circular(16),
           ),
           child: Column(

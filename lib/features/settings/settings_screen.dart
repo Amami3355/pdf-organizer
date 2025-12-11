@@ -7,7 +7,6 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:in_app_review/in_app_review.dart';
 import '../../l10n/app_localizations.dart';
-import '../../config/theme.dart';
 import '../../config/routes.dart';
 import '../../config/constants.dart';
 import '../../core/widgets/settings_tile.dart';
@@ -29,12 +28,12 @@ class SettingsScreen extends ConsumerWidget {
     final isPro = ref.watch(isProProvider);
     
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, color: AppColors.textPrimary, size: 20),
+          icon: Icon(Icons.arrow_back_ios_new, color: Theme.of(context).iconTheme.color, size: 20),
           onPressed: () => context.pop(),
         ),
         title: Text(
@@ -83,7 +82,7 @@ class SettingsScreen extends ConsumerWidget {
                 SettingsTile(
                   icon: Icons.share,
                   title: l10n.shareWithFriends,
-                  iconColor: AppColors.primary,
+                  iconColor: Theme.of(context).primaryColor,
                   onTap: _shareApp,
                 ),
                 SettingsTile(
@@ -137,8 +136,7 @@ class SettingsScreen extends ConsumerWidget {
             Center(
               child: Text(
                 '${AppConstants.appName} v${AppConstants.appVersion}',
-                style: const TextStyle(
-                  color: AppColors.textSecondary,
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   fontSize: 12,
                 ),
               ),
@@ -202,8 +200,8 @@ class SettingsScreen extends ConsumerWidget {
           padding: const EdgeInsets.only(left: 4, bottom: 12),
           child: Text(
             l10n.moreAppsByUs,
-            style: const TextStyle(
-              color: AppColors.textSecondary,
+            style: TextStyle(
+              color: Theme.of(context).textTheme.bodyMedium?.color,
               fontSize: 12,
               fontWeight: FontWeight.w600,
               letterSpacing: 0.5,

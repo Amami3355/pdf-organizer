@@ -67,7 +67,7 @@ class DocumentCard extends StatelessWidget {
         margin: const EdgeInsets.only(bottom: 12),
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: AppColors.surface,
+          color: Theme.of(context).cardColor,
           borderRadius: BorderRadius.circular(16),
         ),
         child: Row(
@@ -77,12 +77,12 @@ class DocumentCard extends StatelessWidget {
               width: 48,
               height: 48,
               decoration: BoxDecoration(
-                color: AppColors.surfaceLight,
+                color: Theme.of(context).cardTheme.shadowColor ?? AppColors.surfaceLight, // Fallback or specific secondary surface
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Center(
                 child: document.isSecured
-                    ? const Icon(Icons.lock, color: AppColors.textSecondary)
+                    ? Icon(Icons.lock, color: Theme.of(context).iconTheme.color!.withValues(alpha: 0.5))
                     : const Icon(Icons.picture_as_pdf, color: AppColors.pdfRed),
               ),
             ),
@@ -147,7 +147,7 @@ class DocumentCard extends StatelessWidget {
             // More Button
             IconButton(
               onPressed: () {},
-              icon: const Icon(Icons.more_vert, color: AppColors.textSecondary),
+              icon: Icon(Icons.more_vert, color: Theme.of(context).iconTheme.color!.withValues(alpha: 0.5)),
             ),
           ],
         ),
