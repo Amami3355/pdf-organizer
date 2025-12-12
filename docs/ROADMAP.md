@@ -18,65 +18,34 @@
 
 ## Phase 1 : Camera Module 📷
 
-**Objectif :** Capturer des documents via la caméra avec détection automatique des bords en temps réel.
+**Objectif :** Scanner des documents avec détection automatique des bords et recadrage natif (UX type iScanner).
 
 ### Stack technique
 
 | Package | Rôle |
 |---------|------|
-| `camerawesome: ^2.0.0` | UI caméra 100% customisable |
-| `google_mlkit_document_scanner: ^0.3.0` | Détection des bords (Android) |
-| Note: iOS utilise `VNDocumentCameraViewController` nativement |
+| `cunning_document_scanner: ^1.4.0` | Scanner natif (Android ML Kit / iOS VisionKit) |
+| `permission_handler: ^12.0.1` | Gestion des permissions caméra |
+
+> iOS : nécessite iOS 13+, `NSCameraUsageDescription`, et l'activation de `PERMISSION_CAMERA=1` dans le Podfile (permission_handler).
 
 ### Architecture
 
 ```
-┌─────────────────────────────────────────────────────────┐
-│                    CameraAwesomeBuilder                  │
-│  ┌─────────────────────────────────────────────────────┐│
-│  │              Camera Preview Stream                   ││
-│  │  ┌─────────────────────────────────────────────┐    ││
-│  │  │     CustomPaint (Polygon Overlay)           │    ││
-│  │  │     - 4 corner points from ML Kit           │    ││
-│  │  │     - Animated path drawing                  │    ││
-│  │  └─────────────────────────────────────────────┘    ││
-│  └─────────────────────────────────────────────────────┘│
-│  ┌────────────┐  ┌────────────┐  ┌────────────────────┐ │
-│  │   Flash    │  │  Capture   │  │  Gallery/Batch     │ │
-│  └────────────┘  └────────────┘  └────────────────────┘ │
-└─────────────────────────────────────────────────────────┘
+┌──────────────────┐    ┌──────────────────────────────┐    ┌──────────┐
+│  CameraScreen    │───▶│  Scanner natif (UI intégrée)  │───▶│  Editor  │
+│ (Flutter route)  │    │  - Auto edges + crop + filter │    │ (Pages)  │
+└──────────────────┘    └──────────────────────────────┘    └──────────┘
 ```
 
 ### Checklist
 
-- [x] **1.1 Setup CameraAwesome**
-  - [x] Ajouter `camerawesome: ^2.0.0` au pubspec.yaml
-  - [x] Ajouter les permissions caméra dans `AndroidManifest.xml` et `Info.plist`
-  - [x] Créer `lib/features/camera/camera_screen.dart`
-  - [x] Implémenter `CameraAwesomeBuilder` avec UI custom
-  - [x] Ajouter le toggle caméra avant/arrière
-  - [x] Implémenter le contrôle du flash (auto/on/off)
-
-- [x] **1.2 Edge Detection Overlay (Real-time)**
-  - [x] Ajouter `google_mlkit_document_scanner: ^0.3.0`
-  - [x] Créer `lib/features/camera/painters/document_overlay_painter.dart`
-  - [x] Connecter `imageStream` de camerawesome à ML Kit (Simulated for now)
-  - [x] Dessiner le polygon en overlay avec `CustomPaint`
-  - [x] Ajouter animation fluide lors de la détection
-  - [x] Feedback visuel (couleur verte) quand document stable
-
-- [x] **1.3 Capture d'image**
-  - [x] Bouton de capture avec animation
-  - [ ] Appliquer perspective transform automatiquement après capture (Blocked by real ML Kit)
-  - [x] Prévisualisation de l'image capturée
-  - [x] Option "Retake" ou "Confirm"
-  - [x] Sauvegarde temporaire dans le cache
-
-- [x] **1.4 Batch Scanning Mode**
-  - [x] Mode multi-page (continuer après chaque capture)
-  - [x] Compteur de pages scannées avec miniatures
-  - [x] Bouton "Terminer le batch"
-  - [x] Navigation vers l'éditeur avec toutes les pages
+- [x] **1.1 Scanner natif (clé en main)**
+  - [x] Ajouter `cunning_document_scanner: ^1.4.0`
+  - [x] Permissions caméra via `permission_handler`
+  - [x] Lancer le scanner depuis `lib/features/camera/camera_screen.dart`
+  - [x] Multi-pages (limite configurable) + import galerie (Android)
+  - [x] Retourner les images recadrées vers l'éditeur (nouveau doc + ajout de pages)
 
 ---
 
@@ -218,9 +187,9 @@
 ```yaml
 # pubspec.yaml - Stack recommandée
 
-# Phase 1 - Camera (Custom UI + ML Kit)
-camerawesome: ^2.0.0
-google_mlkit_document_scanner: ^0.3.0
+# Phase 1 - Camera (Scanner natif)
+cunning_document_scanner: ^1.4.0
+permission_handler: ^12.0.1
 
 # Phase 2 - Image Processing
 image: ^4.1.7

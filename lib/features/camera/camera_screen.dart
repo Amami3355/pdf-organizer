@@ -1,9 +1,8 @@
-import 'dart:io';
-
+import 'package:cunning_document_scanner/cunning_document_scanner.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_mlkit_document_scanner/google_mlkit_document_scanner.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 import '../../config/routes.dart';
 import '../../l10n/app_localizations.dart';
@@ -12,9 +11,9 @@ import 'providers/camera_provider.dart';
 
 /// 📷 Camera Screen
 ///
-/// Launches the native ML Kit Document Scanner (Google Play services) to handle
-/// edge detection, capture, and post-processing with a high-quality UI.
-
+/// Cross-platform scan using `cunning_document_scanner`:
+/// - Android: Google ML Kit document scanner (auto capture + edge detection + crop)
+/// - iOS: VisionKit document camera (auto crop)
 class CameraScreen extends ConsumerStatefulWidget {
   const CameraScreen({super.key});
 
@@ -23,18 +22,16 @@ class CameraScreen extends ConsumerStatefulWidget {
 }
 
 class _CameraScreenState extends ConsumerState<CameraScreen> {
-  bool _isLaunching = false;
+  bool _isScanning = false;
   String? _error;
 
-  void _navigateToEditor() {
-    // Check if we came from editor
-    final shouldPop =
-        GoRouterState.of(context).uri.queryParameters['from'] == 'editor';
+  bool get _fromEditor =>
+      GoRouterState.of(context).uri.queryParameters['from'] == 'editor';
 
-    if (shouldPop) {
+  void _finishFlow() {
+    if (_fromEditor) {
       context.pop();
     } else {
-      // Allow replacement to avoid stacking too many pages and cameras
       context.pushReplacement(AppRoutes.editor);
     }
   }
@@ -42,55 +39,46 @@ class _CameraScreenState extends ConsumerState<CameraScreen> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _startDocumentScanner();
-    });
+    WidgetsBinding.instance.addPostFrameCallback((_) => _startScan());
   }
 
-  Future<void> _startDocumentScanner() async {
-    if (!mounted || _isLaunching) return;
-
-    if (!Platform.isAndroid) {
-      setState(() {
-        _error = 'Le scanner ML Kit n’est disponible que sur Android.';
-        _isLaunching = false;
-      });
-      return;
-    }
+  Future<void> _startScan() async {
+    if (_isScanning) return;
 
     setState(() {
-      _isLaunching = true;
+      _isScanning = true;
       _error = null;
     });
 
-    try {
-      final options = DocumentScannerOptions(
-        documentFormat: DocumentFormat.jpeg,
-        mode: ScannerMode.full, // full UI: filters + crop + rotation
-        pageLimit: 24, // allow generous multi-page sessions
-        isGalleryImport: true,
-      );
+    // Always start with a fresh batch for this scan session.
+    ref.read(scanStateProvider.notifier).clearBatch();
 
-      final scanner = DocumentScanner(options: options);
-      final result = await scanner.scanDocument();
-      await scanner.close();
+    try {
+      final images = await CunningDocumentScanner.getPictures(
+        noOfPages: 24,
+        isGalleryImportAllowed: true,
+        iosScannerOptions: const IosScannerOptions(
+          imageFormat: IosImageFormat.jpg,
+          jpgCompressionQuality: 0.85,
+        ),
+      );
 
       if (!mounted) return;
 
-      // If user cancels or no images, just pop back.
-      if (result.images.isEmpty) {
+      // User cancelled.
+      if (images == null || images.isEmpty) {
         context.pop();
         return;
       }
 
       final now = DateTime.now();
       final pages = <ScanResult>[];
-      for (int i = 0; i < result.images.length; i++) {
+      for (int i = 0; i < images.length; i++) {
         pages.add(
           ScanResult(
             id: '${now.millisecondsSinceEpoch}_$i',
-            imagePath: result.images[i],
-            detectedCorners: null, // ML Kit already crops; corners not exposed
+            imagePath: images[i],
+            detectedCorners: null, // already cropped by native scanner
             capturedAt: now,
             appliedFilter: ScanFilter.original,
             isPerspectiveCorrected: true,
@@ -98,11 +86,8 @@ class _CameraScreenState extends ConsumerState<CameraScreen> {
         );
       }
 
-      // Replace batch with scanned pages
       ref.read(scanStateProvider.notifier).setCapturedImages(pages);
-
-      // Navigate to editor
-      _navigateToEditor();
+      _finishFlow();
     } catch (e) {
       if (!mounted) return;
       setState(() {
@@ -111,10 +96,14 @@ class _CameraScreenState extends ConsumerState<CameraScreen> {
     } finally {
       if (mounted) {
         setState(() {
-          _isLaunching = false;
+          _isScanning = false;
         });
       }
     }
+  }
+
+  Future<void> _openAppSettings() async {
+    await openAppSettings();
   }
 
   @override
@@ -128,47 +117,63 @@ class _CameraScreenState extends ConsumerState<CameraScreen> {
           padding: const EdgeInsets.all(24),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              const Icon(Icons.document_scanner, color: Colors.white, size: 64),
+              const Icon(Icons.document_scanner, color: Colors.white, size: 72),
               const SizedBox(height: 16),
               Text(
                 l10n.scanNew,
                 style: const TextStyle(
                   color: Colors.white,
                   fontSize: 22,
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w700,
                 ),
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 10),
               Text(
-                _error == null
-                    ? 'Lancement du scanner ML Kit (bordures auto, filtres, multi-page)...'
-                    : 'Échec du scanner : $_error',
+                _error ??
+                    'Détection automatique des bords, recadrage et filtres.',
                 textAlign: TextAlign.center,
-                style: const TextStyle(color: Colors.white70),
+                style: const TextStyle(color: Colors.white70, height: 1.3),
               ),
               const SizedBox(height: 24),
-              if (_isLaunching)
+              if (_isScanning)
                 const CircularProgressIndicator(color: Colors.white)
               else
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                Column(
                   children: [
-                    ElevatedButton.icon(
-                      onPressed: _startDocumentScanner,
-                      icon: const Icon(Icons.refresh),
-                      label: const Text('Relancer le scan'),
-                    ),
-                    const SizedBox(width: 12),
-                    OutlinedButton(
-                      onPressed: () => context.pop(),
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: Colors.white70,
-                        side: const BorderSide(color: Colors.white24),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton.icon(
+                        onPressed: _startScan,
+                        icon: const Icon(Icons.document_scanner_outlined),
+                        label: const Text('Scanner'),
                       ),
-                      child: const Text('Annuler'),
                     ),
+                    const SizedBox(height: 12),
+                    if (_error != null)
+                      SizedBox(
+                        width: double.infinity,
+                        child: OutlinedButton(
+                          onPressed: _openAppSettings,
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: Colors.white,
+                            side: const BorderSide(color: Colors.white24),
+                          ),
+                          child: const Text('Ouvrir les réglages'),
+                        ),
+                      )
+                    else
+                      SizedBox(
+                        width: double.infinity,
+                        child: OutlinedButton(
+                          onPressed: () => context.pop(),
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: Colors.white70,
+                            side: const BorderSide(color: Colors.white24),
+                          ),
+                          child: const Text('Annuler'),
+                        ),
+                      ),
                   ],
                 ),
             ],
