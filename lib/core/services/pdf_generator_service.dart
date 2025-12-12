@@ -8,9 +8,12 @@ import '../../features/camera/models/scan_result.dart';
 
 /// Service to generate PDF documents from scanned pages
 class PdfGeneratorService {
-  
   /// Generate a PDF file from a list of ScanResult pages
-  Future<File> generatePdf(List<ScanResult> pages, {String fileName = 'scan_document.pdf'}) async {
+  Future<File> generatePdf(
+    List<ScanResult> pages, {
+    String fileName = 'scan_document.pdf',
+    Directory? outputDirectory,
+  }) async {
     final pdf = pw.Document();
 
     for (final page in pages) {
@@ -28,16 +31,13 @@ class PdfGeneratorService {
           pageFormat: PdfPageFormat.a4,
           build: (pw.Context context) {
             return pw.Center(
-               child: pw.Transform.rotate(
-                 angle: page.rotation * math.pi / 180,
-                 child: pw.Image(
-                   image,
-                   fit: pw.BoxFit.contain,
-                 ),
-               ),
+              child: pw.Transform.rotate(
+                angle: page.rotation * math.pi / 180,
+                child: pw.Image(image, fit: pw.BoxFit.contain),
+              ),
             );
           },
-          margin:  pw.EdgeInsets.zero, // Full bleed or small margin?
+          margin: pw.EdgeInsets.zero, // Full bleed or small margin?
           // If we want margin:
           // margin: const pw.EdgeInsets.all(20),
           // But for scans, typically we want full size or close to it.
@@ -45,7 +45,7 @@ class PdfGeneratorService {
       );
     }
 
-    final output = await getTemporaryDirectory();
+    final output = outputDirectory ?? await getTemporaryDirectory();
     final file = File('${output.path}/$fileName');
     await file.writeAsBytes(await pdf.save());
     return file;

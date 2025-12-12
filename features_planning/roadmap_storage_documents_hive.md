@@ -62,7 +62,8 @@ Champs recommandés :
 ## Roadmap (checklist)
 
 ### Milestone 0 — Spécification finale (1/2 journée)
-- [ ] Confirmer : on persiste **uniquement le PDF** ou **PDF + pages** (ré‑édition) ?
+- [x] Décision : persister **PDF + pages (images)** pour permettre édition, merge, split, reorder même après relance.
+- [x] Décision (Option A) : à l’import d’un PDF, **rasteriser** chaque page en image puis traiter exactement comme un scan (pipeline unifié).
 - [ ] Valider les champs de `Document` (ce qui est *MVP* vs *plus tard*).
 - [ ] Valider l’arborescence des dossiers et conventions de nommage (id‑based).
 - [ ] Définir les règles de tri (ex: `updatedAt desc`) + pagination (si nécessaire).
@@ -71,6 +72,7 @@ Champs recommandés :
 **DoD**
 - Champs figés + format stable (versionné).
 - On sait exactement ce qui est sauvegardé et quand.
+- Pipeline unique (scan/import) basé sur des pages images persistées.
 
 ---
 
@@ -186,4 +188,3 @@ Champs recommandés :
 ## Notes d’intégration avec l’existant
 - Actuellement Home utilise `DummyData` (`lib/features/home/data/dummy_data.dart`) → à remplacer par un provider lié au `DocumentRepository`.
 - L’éditeur manipule des `ScanResult` (images) → décider si on persiste ces pages pour ré‑édition, ou si on “aplatit” en PDF uniquement.
-

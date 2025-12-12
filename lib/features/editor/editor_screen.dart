@@ -6,8 +6,11 @@ import 'package:reorderable_grid_view/reorderable_grid_view.dart';
 import 'package:share_plus/share_plus.dart';
 import '../../config/routes.dart';
 import '../../l10n/app_localizations.dart';
+import '../../core/services/document_models.dart';
 import '../../core/services/pdf_generator_service.dart';
+import '../../core/services/providers.dart';
 import '../../core/widgets/glass_toolbar.dart';
+import '../../core/widgets/loading_overlay.dart';
 import '../../core/painters/dashed_border_painter.dart';
 import 'providers/editor_provider.dart';
 
@@ -24,6 +27,137 @@ class EditorScreen extends ConsumerStatefulWidget {
 }
 
 class _EditorScreenState extends ConsumerState<EditorScreen> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) => _loadDocumentIfNeeded(),
+    );
+  }
+
+  Future<void> _loadDocumentIfNeeded() async {
+    final docId = GoRouterState.of(context).uri.queryParameters['docId'];
+    if (docId == null || docId.isEmpty) return;
+
+    final documentManager = ref.read(documentManagerProvider);
+    final pages = await documentManager.loadDocumentPages(docId);
+    if (!mounted) return;
+
+    ref.read(editorProvider.notifier).setPages(pages);
+  }
+
+  Future<void> _saveDocument() async {
+    final l10n = AppLocalizations.of(context)!;
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
+
+    try {
+      final documentManager = ref.read(documentManagerProvider);
+      final sourceParam = GoRouterState.of(
+        context,
+      ).uri.queryParameters['source'];
+      final docId = GoRouterState.of(context).uri.queryParameters['docId'];
+      final existingDoc = docId == null
+          ? null
+          : documentManager.getDocumentSync(docId);
+      final source =
+          existingDoc?.source ??
+          (sourceParam == 'importPdf'
+              ? DocumentSource.importPdf
+              : DocumentSource.scan);
+
+      final saved = await ref
+          .read(editorProvider.notifier)
+          .saveToLibrary(
+            documentManager: documentManager,
+            documentId: existingDoc == null ? null : docId,
+            source: source,
+          );
+
+      if (!mounted) return;
+      if (saved == null) return;
+
+      scaffoldMessenger.showSnackBar(
+        SnackBar(content: Text('${l10n.save}: ${saved.title}')),
+      );
+      context.go(AppRoutes.home);
+    } catch (e) {
+      if (!mounted) return;
+      scaffoldMessenger.showSnackBar(
+        SnackBar(content: Text('Error saving document: $e')),
+      );
+    }
+  }
+
+  Future<void> _extractSelectedPages() async {
+    final l10n = AppLocalizations.of(context)!;
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
+
+    final editorState = ref.read(editorProvider);
+    if (editorState.selectedPageIds.isEmpty) return;
+
+    final selectedPages = editorState.pages
+        .where((p) => editorState.selectedPageIds.contains(p.id))
+        .toList();
+    if (selectedPages.isEmpty) return;
+
+    final remainingPages = editorState.pages
+        .where((p) => !editorState.selectedPageIds.contains(p.id))
+        .toList();
+
+    final docId = GoRouterState.of(context).uri.queryParameters['docId'];
+    final documentManager = ref.read(documentManagerProvider);
+    final existingDoc = docId == null
+        ? null
+        : documentManager.getDocumentSync(docId);
+
+    final source =
+        existingDoc?.source ??
+        (GoRouterState.of(context).uri.queryParameters['source'] == 'importPdf'
+            ? DocumentSource.importPdf
+            : DocumentSource.scan);
+
+    LoadingOverlay.show(context, message: 'Extracting...');
+    try {
+      await documentManager.createDocumentFromPages(
+        title: existingDoc == null ? '' : '${existingDoc.title} (Extract)',
+        pages: selectedPages,
+        source: source,
+      );
+
+      // Update editor state first (instant UX feedback).
+      ref.read(editorProvider.notifier).setPages(remainingPages);
+      ref.read(editorProvider.notifier).clearSelection();
+
+      // If editing an existing saved document, persist the split.
+      if (existingDoc != null) {
+        if (remainingPages.isEmpty) {
+          await documentManager.deleteDocument(existingDoc.id);
+          if (!mounted) return;
+          LoadingOverlay.hide(context);
+          scaffoldMessenger.showSnackBar(SnackBar(content: Text(l10n.extract)));
+          context.go(AppRoutes.home);
+          return;
+        }
+
+        await documentManager.updateDocumentFromPages(
+          documentId: existingDoc.id,
+          title: existingDoc.title,
+          pages: remainingPages,
+        );
+      }
+
+      if (!mounted) return;
+      LoadingOverlay.hide(context);
+      scaffoldMessenger.showSnackBar(SnackBar(content: Text(l10n.extract)));
+    } catch (e) {
+      if (!mounted) return;
+      LoadingOverlay.hide(context);
+      scaffoldMessenger.showSnackBar(
+        SnackBar(content: Text('Error extracting: $e')),
+      );
+    }
+  }
+
   Future<void> _exportPdf() async {
     final editorState = ref.read(editorProvider);
     if (editorState.pages.isEmpty) return;
@@ -39,7 +173,9 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
       final file = await pdfService.generatePdf(editorState.pages);
 
       // Share
-      await Share.shareXFiles([XFile(file.path)], text: 'Scanned Document');
+      await SharePlus.instance.share(
+        ShareParams(files: [XFile(file.path)], text: 'Scanned Document'),
+      );
     } catch (e) {
       scaffoldMessenger.showSnackBar(
         SnackBar(content: Text('Error exporting PDF: $e')),
@@ -52,6 +188,10 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
     final l10n = AppLocalizations.of(context)!;
     final editorState = ref.watch(editorProvider);
     final editorNotifier = ref.read(editorProvider.notifier);
+    final currentDocId = GoRouterState.of(context).uri.queryParameters['docId'];
+    final currentDoc = currentDocId == null
+        ? null
+        : ref.read(documentManagerProvider).getDocumentSync(currentDocId);
 
     // Total items = pages + add button
     // final int totalItems = editorState.pages.length + 1; // Unused
@@ -72,7 +212,7 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
         title: Column(
           children: [
             Text(
-              'New_Scan.pdf', // TODO: Make editable
+              currentDoc?.title ?? 'New_Scan.pdf', // TODO: Make editable
               style: Theme.of(context).textTheme.titleMedium,
             ),
             Text(
@@ -85,6 +225,23 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
         ),
         centerTitle: true,
         actions: [
+          TextButton(
+            onPressed: editorState.isSaving ? null : _saveDocument,
+            child: editorState.isSaving
+                ? const SizedBox(
+                    width: 18,
+                    height: 18,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : Text(
+                    l10n.save,
+                    style: TextStyle(
+                      color: Theme.of(context).primaryColor,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
+          ),
           TextButton(
             onPressed: _exportPdf,
             child: Text(
@@ -146,6 +303,11 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
               alignment: Alignment.bottomCenter,
               child: GlassToolbar(
                 items: [
+                  GlassToolbarItem(
+                    icon: Icons.call_split,
+                    label: l10n.extract,
+                    onTap: _extractSelectedPages,
+                  ),
                   GlassToolbarItem(
                     icon: Icons.rotate_right,
                     label: l10n.rotate,

@@ -15,7 +15,7 @@ import '../../core/widgets/app_bottom_nav_bar.dart';
 import '../../core/services/providers.dart';
 
 /// ⚙️ Settings Screen
-/// 
+///
 /// App settings with cross-promotion section.
 /// Uses Riverpod for reactive pro status.
 
@@ -27,14 +27,18 @@ class SettingsScreen extends ConsumerWidget {
     final l10n = AppLocalizations.of(context)!;
     // Watch pro status reactively - UI will update automatically when it changes
     final isPro = ref.watch(isProProvider);
-    
+
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new, color: Theme.of(context).iconTheme.color, size: 20),
+          icon: Icon(
+            Icons.arrow_back_ios_new,
+            color: Theme.of(context).iconTheme.color,
+            size: 20,
+          ),
           onPressed: () => context.pop(),
         ),
         title: Text(
@@ -53,7 +57,10 @@ class SettingsScreen extends ConsumerWidget {
         items: [
           AppBottomNavItem(icon: Icons.home_filled, label: l10n.home),
           AppBottomNavItem(icon: Icons.folder_open, label: l10n.files),
-          AppBottomNavItem(icon: Icons.build_circle_outlined, label: l10n.tools),
+          AppBottomNavItem(
+            icon: Icons.build_circle_outlined,
+            label: l10n.tools,
+          ),
           AppBottomNavItem(icon: Icons.settings_outlined, label: l10n.settings),
         ],
       ),
@@ -64,7 +71,7 @@ class SettingsScreen extends ConsumerWidget {
           children: [
             // Pro Status Banner
             _buildProBanner(context, l10n, isPro),
-            
+
             // Purchases Section
             SettingsSection(
               title: l10n.purchases,
@@ -83,7 +90,7 @@ class SettingsScreen extends ConsumerWidget {
                 ),
               ],
             ),
-            
+
             // General Section
             SettingsSection(
               title: l10n.general,
@@ -107,7 +114,7 @@ class SettingsScreen extends ConsumerWidget {
                 ),
               ],
             ),
-            
+
             // Appearance Section
             SettingsSection(
               title: l10n.appearance,
@@ -124,7 +131,7 @@ class SettingsScreen extends ConsumerWidget {
                 ),
               ],
             ),
-            
+
             // Legal Section
             SettingsSection(
               title: l10n.legal,
@@ -141,19 +148,19 @@ class SettingsScreen extends ConsumerWidget {
                 ),
               ],
             ),
-            
+
             // Cross-Promo Section
             const SizedBox(height: 24),
             _buildCrossPromoSection(context, l10n),
-            
+
             // Version
             const SizedBox(height: 32),
             Center(
               child: Text(
                 '${AppConstants.appName} v${AppConstants.appVersion}',
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  fontSize: 12,
-                ),
+                style: Theme.of(
+                  context,
+                ).textTheme.bodyMedium?.copyWith(fontSize: 12),
               ),
             ),
             const SizedBox(height: 32),
@@ -162,8 +169,12 @@ class SettingsScreen extends ConsumerWidget {
       ),
     );
   }
-  
-  Widget _buildProBanner(BuildContext context, AppLocalizations l10n, bool isPro) {
+
+  Widget _buildProBanner(
+    BuildContext context,
+    AppLocalizations l10n,
+    bool isPro,
+  ) {
     if (isPro) {
       return Container(
         margin: const EdgeInsets.only(bottom: 16),
@@ -191,10 +202,7 @@ class SettingsScreen extends ConsumerWidget {
                 ),
                 Text(
                   l10n.allFeaturesUnlocked,
-                  style: const TextStyle(
-                    color: Colors.white70,
-                    fontSize: 14,
-                  ),
+                  style: const TextStyle(color: Colors.white70, fontSize: 14),
                 ),
               ],
             ),
@@ -204,10 +212,10 @@ class SettingsScreen extends ConsumerWidget {
     }
     return const SizedBox.shrink();
   }
-  
+
   Widget _buildCrossPromoSection(BuildContext context, AppLocalizations l10n) {
     if (OtherApps.apps.isEmpty) return const SizedBox.shrink();
-    
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -248,40 +256,44 @@ class SettingsScreen extends ConsumerWidget {
       ],
     );
   }
-  
-  Future<void> _restorePurchases(BuildContext context, WidgetRef ref, AppLocalizations l10n) async {
+
+  Future<void> _restorePurchases(
+    BuildContext context,
+    WidgetRef ref,
+    AppLocalizations l10n,
+  ) async {
     // Use Riverpod provider instead of direct service call
     final restored = await ref.read(purchaseProvider.notifier).restore();
     if (context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            restored 
-                ? l10n.purchasesRestoredSuccess
-                : l10n.noPreviousPurchases,
+            restored ? l10n.purchasesRestoredSuccess : l10n.noPreviousPurchases,
           ),
         ),
       );
     }
   }
-  
+
   Future<void> _rateApp() async {
     final inAppReview = InAppReview.instance;
     if (await inAppReview.isAvailable()) {
       await inAppReview.requestReview();
     }
   }
-  
+
   void _shareApp() {
-    final url = (!kIsWeb && Platform.isIOS) 
-        ? AppConstants.appStoreUrl 
+    final url = (!kIsWeb && Platform.isIOS)
+        ? AppConstants.appStoreUrl
         : AppConstants.playStoreUrl;
-    Share.share(
-      'Check out ${AppConstants.appName}! $url',
-      subject: AppConstants.appName,
+    SharePlus.instance.share(
+      ShareParams(
+        text: 'Check out ${AppConstants.appName}! $url',
+        subject: AppConstants.appName,
+      ),
     );
   }
-  
+
   Future<void> _contactSupport() async {
     final uri = Uri(
       scheme: 'mailto',
@@ -290,7 +302,7 @@ class SettingsScreen extends ConsumerWidget {
     );
     await launchUrl(uri);
   }
-  
+
   Future<void> _openUrl(String url) async {
     final uri = Uri.parse(url);
     if (await canLaunchUrl(uri)) {

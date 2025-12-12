@@ -1,4 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../core/services/document_manager.dart';
+import '../../../core/services/document_models.dart';
 import '../../camera/models/scan_result.dart';
 import '../../camera/providers/camera_provider.dart';
 
@@ -25,7 +27,7 @@ class EditorState {
       isSaving: isSaving ?? this.isSaving,
     );
   }
-  
+
   int get pageCount => pages.length;
 }
 
@@ -34,7 +36,7 @@ class EditorNotifier extends StateNotifier<EditorState> {
   EditorNotifier(this.ref) : super(const EditorState()) {
     _initFromCamera();
   }
-  
+
   final Ref ref;
 
   void _initFromCamera() {
@@ -56,7 +58,7 @@ class EditorNotifier extends StateNotifier<EditorState> {
       ref.read(scanStateProvider.notifier).clearBatch();
     }
   }
-  
+
   void setPages(List<ScanResult> pages) {
     state = state.copyWith(pages: pages);
   }
@@ -86,10 +88,12 @@ class EditorNotifier extends StateNotifier<EditorState> {
       }).toList(),
     );
   }
-  
+
   void deleteSelected() {
     state = state.copyWith(
-      pages: state.pages.where((p) => !state.selectedPageIds.contains(p.id)).toList(),
+      pages: state.pages
+          .where((p) => !state.selectedPageIds.contains(p.id))
+          .toList(),
       selectedPageIds: {},
     );
   }
@@ -103,14 +107,45 @@ class EditorNotifier extends StateNotifier<EditorState> {
     items.insert(newIndex, item);
     state = state.copyWith(pages: items);
   }
-  
+
   void updatePage(ScanResult updatedPage) {
     state = state.copyWith(
-      pages: state.pages.map((p) => p.id == updatedPage.id ? updatedPage : p).toList(),
+      pages: state.pages
+          .map((p) => p.id == updatedPage.id ? updatedPage : p)
+          .toList(),
     );
+  }
+
+  Future<DocumentModel?> saveToLibrary({
+    required DocumentManager documentManager,
+    String? documentId,
+    String title = '',
+    DocumentSource source = DocumentSource.scan,
+  }) async {
+    if (state.pages.isEmpty) return null;
+    if (state.isSaving) return null;
+
+    state = state.copyWith(isSaving: true);
+    try {
+      final saved = documentId == null
+          ? await documentManager.createDocumentFromPages(
+              title: title,
+              pages: state.pages,
+              source: source,
+            )
+          : await documentManager.updateDocumentFromPages(
+              documentId: documentId,
+              title: title,
+              pages: state.pages,
+            );
+      return saved;
+    } finally {
+      state = state.copyWith(isSaving: false);
+    }
   }
 }
 
-final editorProvider = StateNotifierProvider.autoDispose<EditorNotifier, EditorState>((ref) {
-  return EditorNotifier(ref);
-});
+final editorProvider =
+    StateNotifierProvider.autoDispose<EditorNotifier, EditorState>((ref) {
+      return EditorNotifier(ref);
+    });

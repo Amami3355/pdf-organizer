@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'purchase_service.dart';
 import 'storage_service.dart';
+import 'document_manager.dart';
+import 'document_models.dart';
 
 /// 💰 Purchase Provider (Riverpod)
-/// 
+///
 /// Reactive state management for purchase status.
 /// Wraps PurchaseService for reactive UI updates.
 
@@ -14,7 +16,7 @@ class PurchaseNotifier extends Notifier<bool> {
     // Initialize with cached value
     return PurchaseService.instance.isPro;
   }
-  
+
   /// Purchase lifetime access.
   /// Returns true if successful.
   Future<bool> purchaseLifetime() async {
@@ -24,7 +26,7 @@ class PurchaseNotifier extends Notifier<bool> {
     }
     return success;
   }
-  
+
   /// Restore previous purchases.
   /// Returns true if a valid purchase was found.
   Future<bool> restore() async {
@@ -34,7 +36,7 @@ class PurchaseNotifier extends Notifier<bool> {
     }
     return restored;
   }
-  
+
   /// Refresh pro status from server.
   Future<void> refresh() async {
     // Re-read from service after it syncs
@@ -65,7 +67,7 @@ class ThemeNotifier extends Notifier<ThemeMode> {
     final isDarkMode = StorageService.instance.isDarkMode;
     return isDarkMode ? ThemeMode.dark : ThemeMode.light;
   }
-  
+
   /// Toggle between dark and light mode.
   void toggle() {
     if (state == ThemeMode.dark) {
@@ -76,13 +78,13 @@ class ThemeNotifier extends Notifier<ThemeMode> {
       StorageService.instance.setDarkMode(true);
     }
   }
-  
+
   /// Set to a specific theme mode.
   void setThemeMode(ThemeMode mode) {
     state = mode;
     StorageService.instance.setDarkMode(mode == ThemeMode.dark);
   }
-  
+
   /// Check if currently in dark mode.
   bool get isDarkMode => state == ThemeMode.dark;
 }
@@ -95,4 +97,16 @@ final themeProvider = NotifierProvider<ThemeNotifier, ThemeMode>(
 /// Convenience provider to check if dark mode is active
 final isDarkModeProvider = Provider<bool>((ref) {
   return ref.watch(themeProvider) == ThemeMode.dark;
+});
+
+// ─────────────────────────────────────────────────────────────────
+// 📄 Documents (Hive + Files)
+// ─────────────────────────────────────────────────────────────────
+
+final documentManagerProvider = Provider<DocumentManager>((ref) {
+  return DocumentManager.instance;
+});
+
+final documentsProvider = StreamProvider<List<DocumentModel>>((ref) {
+  return ref.watch(documentManagerProvider).watchDocuments();
 });
