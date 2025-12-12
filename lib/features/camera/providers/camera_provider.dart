@@ -2,7 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/scan_result.dart';
 
 /// 📷 Camera Provider
-/// 
+///
 /// Manages the state of the camera/scan feature using Riverpod.
 
 /// Scan state holder (renamed from CameraState to avoid conflict with CameraAwesome)
@@ -96,10 +96,17 @@ class ScanStateNotifier extends StateNotifier<ScanState> {
     );
   }
 
+  /// Replace captured images batch (used by ML Kit document scanner)
+  void setCapturedImages(List<ScanResult> results) {
+    state = state.copyWith(capturedImages: results, isCapturing: false);
+  }
+
   /// Remove a captured image from the batch
   void removeCapturedImage(String id) {
     state = state.copyWith(
-      capturedImages: state.capturedImages.where((img) => img.id != id).toList(),
+      capturedImages: state.capturedImages
+          .where((img) => img.id != id)
+          .toList(),
     );
   }
 
