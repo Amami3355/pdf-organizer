@@ -28,7 +28,9 @@ flutter gen-l10n
 # Android
 flutter run -d android
 
-# iOS
+# iOS (requires iOS platform files)
+# If `ios/` is missing, generate it first:
+# flutter create --platforms=ios .
 flutter run -d ios
 
 # Web
@@ -49,6 +51,8 @@ flutter build apk --release
 flutter build appbundle --release
 
 # iOS
+# If `ios/` is missing, generate it first:
+# flutter create --platforms=ios .
 flutter build ios --release
 
 # Web
@@ -56,6 +60,21 @@ flutter build web --release
 ```
 
 ---
+
+## Document Scanning
+
+The app uses `cunning_document_scanner` to provide a native, cross-platform scanning experience (auto edge detection + crop).
+
+### Android
+- Requires **minSdkVersion 21**
+- Uses **Google Play services** ML Kit document scanner on supported devices
+
+### iOS
+- Requires **iOS 13.0+** (VisionKit)
+- Add `NSCameraUsageDescription` to `ios/Runner/Info.plist`
+- Enable camera permission macros in `ios/Podfile` for `permission_handler` (`PERMISSION_CAMERA=1`)
+
+> Note: Document scanning is not supported on Web.
 
 ## Development Workflow
 

@@ -48,5 +48,6 @@ lib/
 - **Navigation**: GoRouter
 - **Payments**: RevenueCat
 - **Storage**: SharedPreferences
+- **Document Scanning**: Native scanner via `cunning_document_scanner` (Android ML Kit / iOS VisionKit)
 - **i18n**: Flutter Localizations + intl
 - **Fonts**: Google Fonts (Inter)

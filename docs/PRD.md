@@ -51,7 +51,7 @@ As a user, I want to:
 
 | Feature | Description | Priority |
 |---------|-------------|----------|
-| **Document Scanning** | Camera-based scanning with edge detection | P0 |
+| **Document Scanning** | Native document scanning (Android ML Kit / iOS VisionKit) with automatic edge detection + crop | P0 |
 | **PDF Import** | Import existing PDFs from device | P0 |
 | **Basic Organization** | Folder structure for documents | P0 |
 | **View & Navigate** | View PDF pages with zoom/pan | P0 |
@@ -145,9 +145,15 @@ static const bool enableOnboarding = true;
 
 | Platform | Min Version | Status |
 |----------|-------------|--------|
-| iOS | 11.0 | ✅ Supported |
+| iOS | 13.0 | ✅ Supported |
 | Android | API 21 | ✅ Supported |
 | Web | Modern browsers | ⚠️ Limited |
+
+**Scanning Implementation Notes**
+- Implemented via `cunning_document_scanner` (native scanner UI with auto edge detection + crop, multi-page).
+- Android uses a native document-scanner flow backed by Google ML Kit (Play services).
+- iOS uses `VNDocumentCameraViewController` (VisionKit).
+- Web does not support camera document scanning.
 
 ### 6.2 Performance Requirements
 

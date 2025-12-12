@@ -1,5 +1,5 @@
 **Core Features (MVP):**
-1.  **Camera Module:** Auto-edge detection, Flash control, Batch scanning mode.
+1.  **Document Scanner:** Native scan UI via `cunning_document_scanner` (Android ML Kit / iOS VisionKit), auto-edge detection, crop, multi-page.
 2.  **Image Processing:** Perspective transform, Filters (B&W, Magic Color, Grayscale).
 3.  **Editor:** Grid view reordering, page rotation, crop, delete page.
 4.  **Export:** PDF generation, Share sheet integration.
