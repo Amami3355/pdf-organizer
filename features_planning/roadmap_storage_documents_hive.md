@@ -64,9 +64,9 @@ Champs recommandés :
 ### Milestone 0 — Spécification finale (1/2 journée)
 - [x] Décision : persister **PDF + pages (images)** pour permettre édition, merge, split, reorder même après relance.
 - [x] Décision (Option A) : à l’import d’un PDF, **rasteriser** chaque page en image puis traiter exactement comme un scan (pipeline unifié).
-- [ ] Valider les champs de `Document` (ce qui est *MVP* vs *plus tard*).
-- [ ] Valider l’arborescence des dossiers et conventions de nommage (id‑based).
-- [ ] Définir les règles de tri (ex: `updatedAt desc`) + pagination (si nécessaire).
+- [x] Valider les champs de `Document` (ce qui est *MVP* vs *plus tard*).
+- [x] Valider l’arborescence des dossiers et conventions de nommage (id‑based).
+- [x] Définir les règles de tri (ex: `updatedAt desc`) + pagination (si nécessaire).
 - [ ] Définir la politique “clean-up” (fichiers orphelins, thumbnails manquantes, etc).
 
 **DoD**
@@ -77,10 +77,10 @@ Champs recommandés :
 ---
 
 ### Milestone 1 — Fondations techniques (1 journée)
-- [ ] Ajouter dépendances (ex: `hive`, `hive_flutter`, éventuellement `uuid`, `path`).
-- [ ] Initialiser Hive au démarrage (dans `main.dart`/bootstrap) + ouverture des `Box`.
-- [ ] Créer le “service layer” : `DocumentRepository` + `FileStorage`.
-- [ ] Ajouter un “app directory resolver” central (ex: `AppPaths`) pour construire les chemins.
+- [x] Ajouter dépendances (`hive`, `hive_flutter`, `file_picker`, etc).
+- [x] Initialiser Hive au démarrage (dans `main.dart`) + ouverture des `Box`.
+- [x] Créer le “service layer” : `DocumentManager` (API unique) + staging FS.
+- [x] Centraliser la résolution des chemins dans `DocumentManager` (baseDir + dossiers).
 
 **DoD**
 - App démarre avec Hive initialisé.
@@ -89,14 +89,14 @@ Champs recommandés :
 ---
 
 ### Milestone 2 — Stockage fichiers (PDF, pages, thumbnails) (1–2 jours)
-- [ ] Créer les dossiers `documents/`, `thumbnails/`, `pages/` si absents.
-- [ ] Implémenter `FileStorage.copyPageImagesFromScan(paths)` vers `pages/<docId>/`.
-- [ ] Générer le PDF final dans `documents/<docId>.pdf` (à partir des pages de l’éditeur).
-- [ ] Générer une miniature (1ère page) dans `thumbnails/<docId>.jpg` (async).
-- [ ] Mettre en place un **commit atomique** :
-  - [ ] Écrire d’abord dans `tmp/`
-  - [ ] Puis “promouvoir” vers `documents/`/`pages/`/`thumbnails/`
-  - [ ] En cas d’échec : supprimer le staging
+- [x] Créer les dossiers `documents/`, `thumbnails/`, `pages/` (et `tmp/`) si absents.
+- [x] Copier les pages vers `pages/<docId>/` lors du save.
+- [x] Générer le PDF final dans `documents/<docId>.pdf` (à partir des pages de l’éditeur).
+- [x] Générer une miniature (1ère page) dans `thumbnails/<docId>.jpg`.
+- [x] Mettre en place un **commit atomique** :
+  - [x] Écrire d’abord dans `tmp/`
+  - [x] Puis “promouvoir” vers `documents/`/`pages/`/`thumbnails/`
+  - [x] En cas d’échec : supprimer le staging
 
 **DoD**
 - On peut créer un PDF + thumbnail persistés dans le dossier app.
@@ -105,16 +105,15 @@ Champs recommandés :
 ---
 
 ### Milestone 3 — Métadonnées Hive (1–2 jours)
-- [ ] Définir les `Box` :
-  - [ ] `documentsBox` (clé = `documentId`)
-  - [ ] `pagesBox` (clé composite ou liste par document) *(si pages persistées)*
-  - [ ] `metaBox` (ex: `schemaVersion`)
-- [ ] Définir `TypeAdapter` (ou serialization) + stratégie de version/migration.
-- [ ] Implémenter opérations CRUD :
-  - [ ] `createDocument(...)` (écrit metadata après succès FS)
-  - [ ] `updateTitle(...)`
-  - [ ] `markSigned(...)`
-  - [ ] `deleteDocument(...)` (metadata + fichiers)
+- [x] Définir les `Box` :
+  - [x] `documents_data` (clé = `documentId`, contient document + pages persistées)
+  - [x] `documents_meta` (ex: `schema_version`)
+- [x] Serialization JSON versionnée (sans TypeAdapter pour l’instant).
+- [x] Implémenter opérations CRUD :
+  - [x] `createDocumentFromPages(...)` (écrit metadata après succès FS)
+  - [x] `updateDocumentFromPages(...)`
+  - [x] `updateTitle(...)`
+  - [x] `deleteDocument(...)` (metadata + fichiers)
 - [ ] Implémenter “self-healing” au chargement :
   - [ ] Si PDF manquant → marquer doc “broken” ou supprimer (selon politique)
   - [ ] Si thumbnail manquante → régénérer lazy
@@ -127,23 +126,23 @@ Champs recommandés :
 
 ### Milestone 4 — Intégration UX/écrans (2–4 jours)
 #### “Save” / “Create document” depuis l’éditeur
-- [ ] Ajouter une action “Enregistrer” (ou “Terminer”) dans `EditorScreen`.
-- [ ] Lors du save :
-  - [ ] Créer `documentId`
-  - [ ] Copier pages vers stockage app
-  - [ ] Générer `documents/<id>.pdf` + thumbnail
-  - [ ] Écrire metadata Hive
-  - [ ] Retourner à Home avec le nouveau doc en tête
+- [x] Ajouter une action “Enregistrer” dans `EditorScreen`.
+- [x] Lors du save :
+  - [x] Créer `documentId`
+  - [x] Copier pages vers stockage app
+  - [x] Générer `documents/<id>.pdf` + thumbnail
+  - [x] Écrire metadata Hive
+  - [x] Retourner à Home avec le nouveau doc en tête
 
 #### Home = vraie liste (remplacer DummyData)
-- [ ] Remplacer `DummyData.recentDocuments` par un provider `documentsProvider`.
-- [ ] Afficher : titre, taille (stockée ou calculée), date relative, pageCount, status.
-- [ ] Tap sur un doc : ouvrir un écran “Document details / preview” (MVP).
+- [x] Remplacer les données factices par `documentsProvider` (stream Hive).
+- [x] Afficher : titre, taille, date relative, status.
+- [x] Tap sur un doc : ouvrir l’éditeur en mode “document existant”.
 
 #### Document details / actions (MVP)
-- [ ] Ouvrir/partager le PDF (via `share_plus` / `printing`).
-- [ ] Renommer (update metadata).
-- [ ] Supprimer (delete).
+- [x] Partager le PDF (via `share_plus`).
+- [ ] Renommer (update metadata) — service prêt (`updateTitle`) mais UI à ajouter.
+- [x] Supprimer (Home, multi-sélection).
 
 **DoD**
 - Flux complet : Scan → Editor → Save → Home (persistant) → Re-open/share/delete.
@@ -186,5 +185,18 @@ Champs recommandés :
 ---
 
 ## Notes d’intégration avec l’existant
-- Actuellement Home utilise `DummyData` (`lib/features/home/data/dummy_data.dart`) → à remplacer par un provider lié au `DocumentRepository`.
-- L’éditeur manipule des `ScanResult` (images) → décider si on persiste ces pages pour ré‑édition, ou si on “aplatit” en PDF uniquement.
+- Home est connecté à Hive via `documentsProvider` (plus de `DummyData` pour la liste).
+- L’éditeur manipule des `ScanResult` (pages images) et persiste ces pages pour ré‑édition.
+
+---
+
+## Signatures (implémenté)
+
+Approche : **non-destructive** (overlay UI + flatten à l’export PDF).
+
+- Stockage signatures :
+  - PNG transparent dans `signatures/<id>.png`
+  - Métadonnées Hive : `signatures_data`
+- Placements :
+  - Persistés par page (`signaturePlacements`) avec coordonnées normalisées (0..1)
+  - Affichés dans les previews (Editor + détail page) et exportés dans le PDF

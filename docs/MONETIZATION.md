@@ -56,7 +56,7 @@ class AppConstants {
 |---------|-------------|
 | **Singleton** | Single instance across app |
 | **Offline-first** | Pro status cached locally |
-| **Platform-aware** | Handles iOS/Android/Web |
+| **Platform-aware** | Handles iOS/Android (mobile only) |
 | **Error handling** | Graceful fallbacks |
 
 ### Usage

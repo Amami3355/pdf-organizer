@@ -7,8 +7,11 @@ Welcome to the PDF Organizer documentation. This app is built using the **Micro-
 | Document | Description |
 |----------|-------------|
 | [PRD](./PRD.md) | Product Requirements Document |
+| [Features](./Features.md) | Feature list (MVP/Pro) |
 | [Architecture](./ARCHITECTURE.md) | Micro-SaaS Factory architecture |
 | [Developer Guide](./DEVELOPER_GUIDE.md) | Setup and development workflow |
+| [Roadmap](./ROADMAP.md) | Implementation roadmap (FR) |
+| [Changelog](./CHANGELOG.md) | Notable changes |
 | [Internationalization](./I18N.md) | Multi-language support |
 | [Monetization](./MONETIZATION.md) | RevenueCat integration |
 
@@ -47,7 +50,8 @@ lib/
 - **State Management**: Riverpod
 - **Navigation**: GoRouter
 - **Payments**: RevenueCat
-- **Storage**: SharedPreferences
+- **Storage**: SharedPreferences (prefs) + Hive (documents/signatures metadata) + filesystem (PDF/pages/thumbnails)
 - **Document Scanning**: Native scanner via `cunning_document_scanner` (Android ML Kit / iOS VisionKit)
+- **Signatures**: `signature` (canvas) + non-destructive overlays + flatten at export
 - **i18n**: Flutter Localizations + intl
 - **Fonts**: Google Fonts (Inter)

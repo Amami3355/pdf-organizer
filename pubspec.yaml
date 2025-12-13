@@ -72,6 +72,7 @@ dependencies:
   pdf: ^3.10.8
   printing: ^5.12.0
   reorderable_grid_view: ^2.2.8
+  signature: ^6.3.0
 
 dev_dependencies:
   flutter_test:

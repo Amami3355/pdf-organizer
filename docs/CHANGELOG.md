@@ -15,18 +15,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `themeProvider` and `isDarkModeProvider` for reactive theme state
 - Dark/Light mode toggle in Settings > Appearance section
 - Native document scanning via `cunning_document_scanner` (auto edge detection + crop, multi-page)
+- Local document library using **Hive + filesystem** (`DocumentManager`)
+- PDF import (Option A: rasterize pages to images for a unified pipeline)
+- Persisted page model enables merge/split/reorder after relaunch
+- Signature feature (canvas capture, saved signatures, per-page placement, preview overlay)
 
 ### Changed
 - Migrated from `Provider` to `flutter_riverpod: ^2.6.1`
 - `main.dart` now wraps app with `ProviderScope`
 - `MyApp` converted to `ConsumerWidget` for theme reactivity
 - Replaced the from-scratch camera/edge detection pipeline with the native scanner flow (better performance + more reliable borders)
+- Pinned `share_plus` to `^11.0.0` for Android/Kotlin compatibility
 
 ### Planned
 - OCR text recognition
 - Cloud sync
-- Digital signatures
-- PDF merge/split
+- Compression options
+- PDF password/encryption
 
 ---
 

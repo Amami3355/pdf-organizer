@@ -1,6 +1,8 @@
 // 📷 Camera Feature - Models
 // Data models for the camera/scan feature.
 
+import '../../../core/services/signature_models.dart';
+
 /// Represents a single scanned image result
 class ScanResult {
   final String id;
@@ -10,6 +12,7 @@ class ScanResult {
   final ScanFilter appliedFilter;
   final bool isPerspectiveCorrected;
   final int rotation; // 0, 90, 180, 270
+  final List<SignaturePlacementModel> signaturePlacements;
 
   const ScanResult({
     required this.id,
@@ -19,6 +22,7 @@ class ScanResult {
     this.appliedFilter = ScanFilter.original,
     this.isPerspectiveCorrected = false,
     this.rotation = 0,
+    this.signaturePlacements = const [],
   });
 
   ScanResult copyWith({
@@ -29,6 +33,7 @@ class ScanResult {
     ScanFilter? appliedFilter,
     bool? isPerspectiveCorrected,
     int? rotation,
+    List<SignaturePlacementModel>? signaturePlacements,
   }) {
     return ScanResult(
       id: id ?? this.id,
@@ -38,6 +43,7 @@ class ScanResult {
       appliedFilter: appliedFilter ?? this.appliedFilter,
       isPerspectiveCorrected: isPerspectiveCorrected ?? this.isPerspectiveCorrected,
       rotation: rotation ?? this.rotation,
+      signaturePlacements: signaturePlacements ?? this.signaturePlacements,
     );
   }
 }

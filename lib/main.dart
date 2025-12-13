@@ -10,6 +10,7 @@ import 'core/services/storage_service.dart';
 import 'core/services/purchase_service.dart';
 import 'core/services/analytics_service.dart';
 import 'core/services/document_manager.dart';
+import 'core/services/signature_manager.dart';
 import 'core/services/providers.dart';
 
 /// 🏭 PDF Organizer - Micro-SaaS Factory Architecture
@@ -24,6 +25,7 @@ void main() async {
   await StorageService.instance.init();
   await PurchaseService.instance.init();
   await DocumentManager.instance.init();
+  await SignatureManager.instance.init();
 
   // Optional: Initialize analytics
   if (AppConstants.enableAnalytics) {

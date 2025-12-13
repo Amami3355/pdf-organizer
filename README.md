@@ -1,16 +1,22 @@
-# myapp
+# PDF Organizer
 
-A new Flutter project.
+Mobile-first PDF scanner and organizer (Android/iOS).
+
+## Docs
+
+See `docs/README.md`.
 
 ## Getting Started
 
-This project is a starting point for a Flutter application.
+```bash
+flutter pub get
+flutter gen-l10n
+flutter run -d android
+```
 
-A few resources to get you started if this is your first Flutter project:
+## Highlights
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+- Native document scanning via `cunning_document_scanner` (auto borders + crop, multi-page)
+- Local library using Hive + filesystem (relative filenames only)
+- Page editing (reorder, rotate, extract, merge) + PDF export/share
+- Signature capture + placement (non-destructive overlay + flatten on export)

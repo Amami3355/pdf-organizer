@@ -138,9 +138,104 @@ class DocumentManager {
             appliedFilter: p.appliedFilter,
             isPerspectiveCorrected: true,
             rotation: p.rotation,
+            signaturePlacements: p.signaturePlacements,
           ),
         )
         .toList();
+  }
+
+  Future<DocumentModel> reorderDocumentPages({
+    required String documentId,
+    required List<DocumentPageModel> pages,
+  }) async {
+    _ensureInitialized();
+    if (pages.isEmpty) {
+      throw ArgumentError.value(pages, 'pages', 'Must not be empty');
+    }
+
+    final existing = getDocumentSync(documentId);
+    if (existing == null) {
+      throw StateError('Document not found: $documentId');
+    }
+
+    final now = DateTime.now();
+    final thumbFileName = (existing.thumbnailFileName?.trim().isNotEmpty ??
+            false)
+        ? existing.thumbnailFileName!
+        : '$documentId.jpg';
+
+    final tmpRoot = Directory(
+      '${tmpRootDir.path}/$documentId.reorder.${now.millisecondsSinceEpoch}',
+    );
+    final tmpDocuments = Directory('${tmpRoot.path}/documents');
+    final tmpThumbnails = Directory('${tmpRoot.path}/thumbnails');
+
+    await tmpDocuments.create(recursive: true);
+    await tmpThumbnails.create(recursive: true);
+
+    try {
+      final scanPages = pages
+          .map(
+            (p) => ScanResult(
+              id: p.id,
+              imagePath: resolvePagePath(p),
+              capturedAt: existing.createdAt,
+              appliedFilter: p.appliedFilter,
+              isPerspectiveCorrected: true,
+              rotation: p.rotation,
+              signaturePlacements: p.signaturePlacements,
+            ),
+          )
+          .toList();
+
+      for (final page in scanPages) {
+        final file = File(page.imagePath);
+        if (!await file.exists()) {
+          throw StateError('Missing page file: ${file.path}');
+        }
+      }
+
+      final pdfFile = await _pdfService.generatePdf(
+        scanPages,
+        fileName: existing.pdfFileName,
+        outputDirectory: tmpDocuments,
+      );
+      final pdfSizeBytes = await pdfFile.length();
+
+      final thumbDest = File('${tmpThumbnails.path}/$thumbFileName');
+      await _generateThumbnail(
+        sourceImage: File(scanPages.first.imagePath),
+        destinationFile: thumbDest,
+      );
+
+      final finalPdf = File('${documentsDir.path}/${existing.pdfFileName}');
+      if (await finalPdf.exists()) {
+        await finalPdf.delete();
+      }
+      await pdfFile.rename(finalPdf.path);
+
+      if (await thumbDest.exists()) {
+        final finalThumb = File('${thumbnailsDir.path}/$thumbFileName');
+        if (await finalThumb.exists()) {
+          await finalThumb.delete();
+        }
+        await thumbDest.rename(finalThumb.path);
+      }
+
+      final updated = existing.copyWith(
+        updatedAt: now,
+        pages: pages,
+        pdfSizeBytes: pdfSizeBytes,
+        thumbnailFileName: thumbFileName,
+        isSigned: pages.any((p) => p.signaturePlacements.isNotEmpty),
+      );
+      await _documentsBox.put(documentId, updated.toJson());
+      return updated;
+    } finally {
+      if (await tmpRoot.exists()) {
+        await tmpRoot.delete(recursive: true);
+      }
+    }
   }
 
   Future<void> deleteDocument(String documentId) async {
@@ -243,6 +338,7 @@ class DocumentManager {
             imageFileName: relative,
             rotation: pages[i].rotation,
             appliedFilter: pages[i].appliedFilter,
+            signaturePlacements: pages[i].signaturePlacements,
           ),
         );
 
@@ -279,6 +375,7 @@ class DocumentManager {
         source: source,
         pages: pageModels,
         pdfSizeBytes: pdfSizeBytes,
+        isSigned: pageModels.any((p) => p.signaturePlacements.isNotEmpty),
       );
 
       await _documentsBox.put(docId, document.toJson());
@@ -349,6 +446,7 @@ class DocumentManager {
             imageFileName: relative,
             rotation: pages[i].rotation,
             appliedFilter: pages[i].appliedFilter,
+            signaturePlacements: pages[i].signaturePlacements,
           ),
         );
 
@@ -381,6 +479,7 @@ class DocumentManager {
         pages: pageModels,
         pdfSizeBytes: pdfSizeBytes,
         thumbnailFileName: thumbFileName,
+        isSigned: pageModels.any((p) => p.signaturePlacements.isNotEmpty),
       );
 
       await _documentsBox.put(documentId, updated.toJson());

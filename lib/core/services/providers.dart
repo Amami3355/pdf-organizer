@@ -4,6 +4,8 @@ import 'purchase_service.dart';
 import 'storage_service.dart';
 import 'document_manager.dart';
 import 'document_models.dart';
+import 'signature_manager.dart';
+import 'signature_models.dart';
 
 /// 💰 Purchase Provider (Riverpod)
 ///
@@ -109,4 +111,16 @@ final documentManagerProvider = Provider<DocumentManager>((ref) {
 
 final documentsProvider = StreamProvider<List<DocumentModel>>((ref) {
   return ref.watch(documentManagerProvider).watchDocuments();
+});
+
+// ─────────────────────────────────────────────────────────────────
+// ✍️ Signatures (Hive + Files)
+// ─────────────────────────────────────────────────────────────────
+
+final signatureManagerProvider = Provider<SignatureManager>((ref) {
+  return SignatureManager.instance;
+});
+
+final signaturesProvider = StreamProvider<List<SignatureModel>>((ref) {
+  return ref.watch(signatureManagerProvider).watchSignatures();
 });

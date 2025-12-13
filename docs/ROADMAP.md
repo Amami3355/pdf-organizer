@@ -1,18 +1,43 @@
 # 🗺️ PDF Organizer - Roadmap d'Implémentation
 
 > Document de suivi pour l'implémentation des fonctionnalités MVP et Pro.  
-> Dernière mise à jour : 2025-12-11 (Mourad)
+> Dernière mise à jour : 2025-12-13 (Mourad)
 
 ---
 
 ## Vue d'ensemble du Pipeline
 
 ```
-┌─────────────┐    ┌──────────────────┐    ┌──────────┐    ┌──────────┐
-│   Camera    │───▶│ Image Processing │───▶│  Editor  │───▶│  Export  │
-│   Module    │    │   (Transforms)   │    │  (Pages) │    │   (PDF)  │
-└─────────────┘    └──────────────────┘    └──────────┘    └──────────┘
+┌─────────────┐    ┌──────────────────┐    ┌──────────┐    ┌──────────────┐    ┌──────────┐
+│ Scan/Import │───▶│ Image Processing │───▶│  Editor  │───▶│ Library (FS+DB)│───▶│  Export  │
+│ (Scanner/PDF)│    │   (Transforms)   │    │  (Pages) │    │ (Hive + files) │    │   (PDF)  │
+└─────────────┘    └──────────────────┘    └──────────┘    └──────────────┘    └──────────┘
 ```
+
+---
+
+## Phase 0 : Bibliothèque & stockage local (Hive + fichiers) 📚
+
+**Objectif :** Persister les documents (métadonnées + fichiers) pour permettre réouverture, merge/split/reorder, et export.
+
+### Décisions clés
+- ✅ **Pas de Web** (Android/iOS uniquement)
+- ✅ Stockage **local-first** : Hive (métadonnées) + filesystem (PDF/pages/thumbnails)
+- ✅ En DB : **uniquement des noms relatifs** (jamais de chemins absolus)
+- ✅ Pipeline unifié : scan et import PDF deviennent des **pages image** (Option A = rasterisation)
+
+### Implémentation (référence code)
+- `lib/core/services/document_manager.dart` (Hive + FS + staging `tmp/`)
+- `lib/core/services/document_models.dart` (Document + pages persistées)
+- Import PDF → `DocumentManager.rasterizePdfToPages(...)` (via `Printing.raster`)
+
+### Checklist
+- [x] Dossiers app : `documents/`, `thumbnails/`, `pages/`, `tmp/`
+- [x] CRUD documents (create/update/delete) + watch stream pour Home
+- [x] Réouverture d'un document existant dans l'éditeur
+- [x] Merge de documents (Home, multi-sélection)
+- [x] Split/extract de pages (Editor → nouveau document)
+- [x] Reorder persistant (écran dédié “Manage pages” pour documents sauvegardés)
 
 ---
 
@@ -98,12 +123,14 @@
   - [x] Implémenter `ReorderableGridView` ou équivalent
   - [x] Animation de drag fluide
   - [x] Feedback visuel de la position cible
-  - [x] Persistance de l'ordre
+  - [x] Persistance de l'ordre (documents sauvegardés)
+  - [x] Écran “Manage pages” (drag & drop, puis save)
 
 - [x] **3.3 Actions sur les pages**
   - [x] **Rotation** : 90° horaire/anti-horaire
   - [ ] **Crop** : Recadrage manuel avec resize handles (Blocked)
   - [x] **Delete** : Suppression avec confirmation
+  - [x] **Extract/Split** : Extraire une sélection en nouveau document
   - [ ] **Duplicate** : Copie d'une page
 
 - [x] **3.4 Ajout de pages**
@@ -120,16 +147,17 @@
 **Packages requis :**
 - `pdf: ^3.10.8`
 - `printing: ^5.12.0`
-- `share_plus: ^7.2.1` (déjà installé)
+- `share_plus: ^11.0.0` (pinned: compat Android/Kotlin)
 - `path_provider: ^2.1.2`
 
 ### Checklist
 
 - [x] **4.1 Génération PDF**
-  - [x] Créer `lib/core/services/pdf_service.dart`
+  - [x] Créer `lib/core/services/pdf_generator_service.dart`
   - [x] Convertir les images en pages PDF
   - [x] Respecter l'orientation de chaque page
   - [x] Optimiser la taille du fichier (compression JPEG)
+  - [x] Support signatures (flatten à l'export)
 
 - [ ] **4.2 Options d'export**
   - [ ] Créer `lib/features/export/export_options_sheet.dart`
@@ -144,9 +172,9 @@
   - [x] Prévisualisation avant partage (optionnel)
 
 - [ ] **4.4 Historique des documents**
-  - [ ] Sauvegarder les PDFs exportés localement
-  - [ ] Afficher dans la liste "Récents" de HomeScreen
-  - [ ] Option de ré-export/modification
+  - [x] Sauvegarder les PDFs et pages localement (DocumentManager)
+  - [x] Afficher dans la liste "Récents" de HomeScreen
+  - [x] Réouverture/modification + ré-export
 
 ---
 
@@ -161,10 +189,10 @@
 - [ ] Rendre le PDF "searchable"
 
 ### 5.2 Signature Pad
-- [ ] Créer un canvas de dessin vectoriel
-- [ ] Sauvegarder les signatures
-- [ ] Placement libre sur les pages PDF
-- [ ] Redimensionnement de la signature
+- [x] Créer un canvas de signature (doigt) via `signature`
+- [x] Sauvegarder les signatures (PNG transparent + Hive metadata)
+- [x] Placement libre sur les pages (drag + pinch)
+- [x] Affichage en preview (overlay UI) + flatten lors de l'export PDF
 
 ### 5.3 Compression
 - [ ] Slider de qualité (0-100%)
@@ -199,10 +227,16 @@ flutter_image_compress: ^2.1.0
 pdf: ^3.10.8
 printing: ^5.12.0
 path_provider: ^2.1.2
+share_plus: ^11.0.0
+
+# Library (local storage)
+hive: ^2.2.3
+hive_flutter: ^1.1.0
+file_picker: ^8.1.2
 
 # Phase 5 - Pro Features
 google_mlkit_text_recognition: ^0.11.0
-signature: ^5.4.1
+signature: ^6.3.0
 ```
 
 ---

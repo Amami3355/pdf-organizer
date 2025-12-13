@@ -9,9 +9,13 @@ import '../../l10n/app_localizations.dart';
 import '../../core/services/document_models.dart';
 import '../../core/services/pdf_generator_service.dart';
 import '../../core/services/providers.dart';
+import '../../core/services/signature_models.dart';
 import '../../core/widgets/glass_toolbar.dart';
 import '../../core/widgets/loading_overlay.dart';
 import '../../core/painters/dashed_border_painter.dart';
+import '../signature/place_signature_screen.dart';
+import '../signature/signature_overlay_preview.dart';
+import '../signature/signature_picker_sheet.dart';
 import 'providers/editor_provider.dart';
 
 /// ✏️ Editor Screen
@@ -183,6 +187,66 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
     }
   }
 
+  Future<void> _signPages() async {
+    final state = ref.read(editorProvider);
+    if (state.pages.isEmpty) return;
+
+    final targetPageIds = state.selectedPageIds.isNotEmpty
+        ? [
+            for (final p in state.pages)
+              if (state.selectedPageIds.contains(p.id)) p.id,
+          ]
+        : [state.pages.last.id];
+
+    final signature = await showModalBottomSheet<SignatureModel>(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (context) => const SignaturePickerSheet(),
+    );
+    if (!mounted || signature == null) return;
+
+    final fresh = ref.read(editorProvider);
+    final firstId = targetPageIds.first;
+    final page = fresh.pages.firstWhere((p) => p.id == firstId);
+    SignaturePlacementModel? initialPlacement;
+    for (final p in page.signaturePlacements) {
+      if (p.signatureId == signature.id) {
+        initialPlacement = p;
+        break;
+      }
+    }
+
+    final result = await Navigator.of(context).push<PlaceSignatureResult>(
+      MaterialPageRoute(
+        builder: (_) => PlaceSignatureScreen(
+          page: page,
+          signature: signature,
+          initialPlacement: initialPlacement,
+        ),
+      ),
+    );
+    if (!mounted || result == null) return;
+
+    final notifier = ref.read(editorProvider.notifier);
+    if (result.removed) {
+      notifier.removeSignaturePlacementForPages(
+        pageIds: targetPageIds,
+        signatureId: signature.id,
+      );
+      return;
+    }
+
+    final placement = result.placement;
+    if (placement == null) return;
+    notifier.upsertSignaturePlacementForPages(
+      pageIds: targetPageIds,
+      placement: placement,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -253,6 +317,21 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
               ),
             ),
           ),
+          if (currentDoc != null)
+            IconButton(
+              tooltip: 'Reorder pages',
+              onPressed: () async {
+                await context.push(
+                  AppRoutes.managePages.replaceFirst(':id', currentDoc.id),
+                );
+                if (!mounted) return;
+                await _loadDocumentIfNeeded();
+              },
+              icon: Icon(
+                Icons.reorder,
+                color: Theme.of(context).primaryColor,
+              ),
+            ),
         ],
       ),
 
@@ -289,6 +368,7 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
                       editorState.pages[i].id,
                     ),
                     editorState.pages[i].rotation,
+                    editorState.pages[i].signaturePlacements,
                   ),
 
                 // Add Page Button (Key is required for reordering)
@@ -303,6 +383,11 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
               alignment: Alignment.bottomCenter,
               child: GlassToolbar(
                 items: [
+                  GlassToolbarItem(
+                    icon: Icons.edit_outlined,
+                    label: l10n.sign,
+                    onTap: _signPages,
+                  ),
                   GlassToolbarItem(
                     icon: Icons.call_split,
                     label: l10n.extract,
@@ -335,7 +420,11 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
               alignment: Alignment.bottomCenter,
               child: GlassToolbar(
                 items: [
-                  GlassToolbarItem(icon: Icons.edit_outlined, label: l10n.sign),
+                  GlassToolbarItem(
+                    icon: Icons.edit_outlined,
+                    label: l10n.sign,
+                    onTap: _signPages,
+                  ),
                   GlassToolbarItem(icon: Icons.compress, label: l10n.compress),
                   GlassToolbarItem(
                     icon: Icons.crop,
@@ -361,7 +450,11 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
     String path,
     bool isSelected,
     int rotation,
+    List<SignaturePlacementModel> signaturePlacements,
   ) {
+    final hasSignature = signaturePlacements.isNotEmpty;
+    final signatureBaseDirPath = ref.read(signatureManagerProvider).baseDirPath;
+
     return GestureDetector(
       key: ValueKey(id),
       onTap: () {
@@ -402,15 +495,23 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
                   ),
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(4),
-                    child: RotatedBox(
-                      quarterTurns: rotation ~/ 90,
-                      child: Image.file(
-                        File(path),
-                        fit: BoxFit.cover,
-                        width: double.infinity,
-                        height: double.infinity,
-                      ),
-                    ),
+                    child: hasSignature
+                        ? SignatureOverlayPreview(
+                            pageImagePath: path,
+                            rotation: rotation,
+                            fit: BoxFit.cover,
+                            placements: signaturePlacements,
+                            signatureBaseDirPath: signatureBaseDirPath,
+                          )
+                        : RotatedBox(
+                            quarterTurns: rotation ~/ 90,
+                            child: Image.file(
+                              File(path),
+                              fit: BoxFit.cover,
+                              width: double.infinity,
+                              height: double.infinity,
+                            ),
+                          ),
                   ),
                 ),
                 if (isSelected)
@@ -427,6 +528,23 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
                         Icons.check,
                         color: Colors.white,
                         size: 16,
+                      ),
+                    ),
+                  ),
+                if (hasSignature)
+                  Positioned(
+                    top: 8,
+                    left: 8,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.black.withValues(alpha: 0.5),
+                        borderRadius: BorderRadius.circular(999),
+                      ),
+                      padding: const EdgeInsets.all(4),
+                      child: const Icon(
+                        Icons.draw_outlined,
+                        color: Colors.white,
+                        size: 14,
                       ),
                     ),
                   ),

@@ -45,7 +45,13 @@ lib/
 │   │   ├── providers.dart         # Riverpod providers (state management)
 │   │   ├── purchase_service.dart  # RevenueCat integration
 │   │   ├── storage_service.dart   # SharedPreferences wrapper
-│   │   └── analytics_service.dart # Analytics placeholder
+│   │   ├── analytics_service.dart # Analytics placeholder
+│   │   ├── document_manager.dart  # Documents: Hive + filesystem
+│   │   ├── document_models.dart   # Document/page models (persisted)
+│   │   ├── pdf_generator_service.dart # PDF generation (incl. signatures)
+│   │   ├── signature_manager.dart # Signatures: Hive + filesystem
+│   │   ├── signature_models.dart  # Signature + placement models
+│   │   └── image_processing_service.dart # Filters/crop helpers
 │   │
 │   └── widgets/
 │       ├── primary_button.dart     # CTA buttons with loading
@@ -59,7 +65,9 @@ lib/
 │   │   ├── data/
 │   │   ├── models/
 │   │   └── widgets/
+│   ├── camera/                # Scan flow (native scanner)
 │   ├── editor/
+│   ├── signature/             # Signature capture + placement UI
 │   ├── settings/
 │   ├── paywall/
 │   └── onboarding/

@@ -1,11 +1,12 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../l10n/app_localizations.dart';
 import '../../core/services/image_processing_service.dart';
+import '../../core/services/providers.dart';
 import '../camera/models/scan_result.dart';
 import 'providers/editor_provider.dart';
+import '../signature/signature_overlay_preview.dart';
 
 /// 🎨 Edit Page Screen
 ///
@@ -121,12 +122,14 @@ class _EditPageScreenState extends ConsumerState<EditPageScreen> {
         children: [
           Expanded(
             child: Center(
-              child: RotatedBox(
-                quarterTurns: _page.rotation ~/ 90,
-                child: Image.file(
-                  File(_currentImagePath),
-                  fit: BoxFit.contain,
-                ),
+              child: SignatureOverlayPreview(
+                pageImagePath: _currentImagePath,
+                rotation: _page.rotation,
+                fit: BoxFit.contain,
+                placements: _page.signaturePlacements,
+                signatureBaseDirPath: ref
+                    .read(signatureManagerProvider)
+                    .baseDirPath,
               ),
             ),
           ),

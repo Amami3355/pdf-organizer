@@ -53,7 +53,7 @@ As a user, I want to:
 |---------|-------------|----------|
 | **Document Scanning** | Native document scanning (Android ML Kit / iOS VisionKit) with automatic edge detection + crop | P0 |
 | **PDF Import** | Import existing PDFs from device | P0 |
-| **Basic Organization** | Folder structure for documents | P0 |
+| **Document Library** | Persist scanned/imported documents locally (metadata + files) | P0 |
 | **View & Navigate** | View PDF pages with zoom/pan | P0 |
 | **Share** | Share PDFs via native share sheet | P1 |
 
@@ -64,8 +64,8 @@ As a user, I want to:
 | **Unlimited Processing** | No limit on document operations | P0 |
 | **Cloud Sync** | Sync across devices | P1 |
 | **OCR Text Recognition** | Searchable text in scanned docs | P1 |
-| **Digital Signatures** | Sign documents | P1 |
-| **PDF Merge/Split** | Combine or extract pages | P2 |
+| **Digital Signatures** | Create and apply signatures on pages/PDFs | P1 |
+| **PDF Merge/Split** | Combine PDFs or extract pages into a new document | P2 |
 | **Password Protection** | Encrypt PDFs | P2 |
 | **Export Formats** | Export to Word, Excel, Image | P2 |
 
@@ -147,13 +147,13 @@ static const bool enableOnboarding = true;
 |----------|-------------|--------|
 | iOS | 13.0 | ✅ Supported |
 | Android | API 21 | ✅ Supported |
-| Web | Modern browsers | ⚠️ Limited |
+| Web | — | ❌ Not supported |
 
 **Scanning Implementation Notes**
 - Implemented via `cunning_document_scanner` (native scanner UI with auto edge detection + crop, multi-page).
 - Android uses a native document-scanner flow backed by Google ML Kit (Play services).
 - iOS uses `VNDocumentCameraViewController` (VisionKit).
-- Web does not support camera document scanning.
+- Web is explicitly out of scope for this project.
 
 ### 6.2 Performance Requirements
 
@@ -232,19 +232,39 @@ static const bool enableOnboarding = true;
 
 ### Phase 1: MVP (Current)
 - [x] Document scanning
-- [x] Basic organization
+- [x] Local document library (Hive + files)
 - [x] Pro paywall
 - [x] i18n (EN, FR)
 
 ### Phase 2: Enhancement (Q1 2025)
 - [ ] OCR integration
 - [ ] Cloud sync
-- [ ] Digital signatures
+- [x] Digital signatures (capture + placement + export)
 
 ### Phase 3: Growth (Q2 2025)
 - [ ] Analytics dashboard
 - [ ] Team/Enterprise tier
 - [ ] API access
+
+---
+
+## 11. Current Implementation Status (December 2025)
+
+### 11.1 Scanning (iScanner-like)
+- Native scanner UI via `cunning_document_scanner` with automatic border detection + crop (multi-page).
+
+### 11.2 Storage (documents + metadata)
+- Local-first storage using **Hive** for metadata + **filesystem** for PDFs/pages/thumbnails.
+- Only **relative file names** are persisted (paths are resolved at runtime from `getApplicationDocumentsDirectory()`).
+
+### 11.3 Editing (pages)
+- Persistent page model enables: reorder, rotate, extract pages, merge documents.
+- PDF import uses Option A: rasterize PDF pages to images to reuse the same pipeline as scans.
+
+### 11.4 Signatures (non-destructive)
+- User creates a signature via a canvas, saved as a transparent PNG.
+- Signature placement is stored as per-page overlay metadata and rendered in previews.
+- Signatures are flattened during PDF generation/export (so shared PDFs include the signature).
 
 ---
 

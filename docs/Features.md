@@ -1,12 +1,18 @@
 **Core Features (MVP):**
-1.  **Document Scanner:** Native scan UI via `cunning_document_scanner` (Android ML Kit / iOS VisionKit), auto-edge detection, crop, multi-page.
-2.  **Image Processing:** Perspective transform, Filters (B&W, Magic Color, Grayscale).
-3.  **Editor:** Grid view reordering, page rotation, crop, delete page.
-4.  **Export:** PDF generation, Share sheet integration.
+1. **Document Scanner:** Native scan UI via `cunning_document_scanner` (Android ML Kit / iOS VisionKit), auto-edge detection + crop, multi-page.
+2. **PDF Import:** Import PDFs and rasterize pages to images (unified scan/import pipeline).
+3. **Local Library (offline-first):** Persist documents using Hive (metadata) + filesystem (PDF/pages/thumbnails). Only relative filenames are stored.
+4. **Editor (pages):** Reorder (persisted), rotate, delete, extract selected pages (split), merge documents (multi-select in Home).
+5. **Signatures (non-destructive):** Create signatures (canvas), place on pages (drag + pinch), visible in previews, flattened at PDF export.
+6. **Export/Share:** PDF generation (`pdf`) + native share sheet (`share_plus`).
 
-**Pro Features (Locked behind RevenueCat):**
-1.  **On-Device OCR:** Extract text from images using Google ML Kit.
-2.  **Signature Pad:** Vector drawing on canvas + placing on PDF.
-3.  **Compression:** Adjustable image quality for PDF size reduction.
-4.  **Security:** PDF Password encryption.
-5.  **Remove Ads/Watermark:** Clean output.
+**Pro Features (Locked behind RevenueCat, planned):**
+1. **On-Device OCR:** Extract/search text from pages using Google ML Kit.
+2. **Compression:** Adjustable image quality for smaller PDFs.
+3. **Security:** PDF password/encryption.
+4. **Cloud Sync:** Multi-device sync.
+
+**Notes / Limitations (current):**
+- No Web support (Android/iOS only).
+- Manual crop / corner adjustment in the editor is not implemented yet (scan cropping is handled by the native scanner via `cunning_document_scanner`).
+- Advanced perspective transform post-processing is planned (see `docs/ROADMAP.md`).

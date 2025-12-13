@@ -1,4 +1,5 @@
 import '../../features/camera/models/scan_result.dart';
+import 'signature_models.dart';
 
 enum DocumentSource { scan, importPdf }
 
@@ -9,12 +10,14 @@ class DocumentPageModel {
   final String imageFileName;
   final int rotation; // 0/90/180/270
   final ScanFilter appliedFilter;
+  final List<SignaturePlacementModel> signaturePlacements;
 
   const DocumentPageModel({
     required this.id,
     required this.imageFileName,
     this.rotation = 0,
     this.appliedFilter = ScanFilter.original,
+    this.signaturePlacements = const [],
   });
 
   Map<String, dynamic> toJson() {
@@ -23,6 +26,7 @@ class DocumentPageModel {
       'imageFileName': imageFileName,
       'rotation': rotation,
       'appliedFilter': appliedFilter.name,
+      'signaturePlacements': signaturePlacements.map((p) => p.toJson()).toList(),
     };
   }
 
@@ -33,11 +37,18 @@ class DocumentPageModel {
       orElse: () => ScanFilter.original,
     );
 
+    final rawPlacements = (json['signaturePlacements'] as List?) ?? const [];
+    final placements = rawPlacements
+        .whereType<Map>()
+        .map((p) => SignaturePlacementModel.fromJson(Map<String, dynamic>.from(p)))
+        .toList();
+
     return DocumentPageModel(
       id: json['id'] as String,
       imageFileName: json['imageFileName'] as String,
       rotation: (json['rotation'] as num?)?.toInt() ?? 0,
       appliedFilter: filter,
+      signaturePlacements: placements,
     );
   }
 }

@@ -33,9 +33,6 @@ flutter run -d android
 # flutter create --platforms=ios .
 flutter run -d ios
 
-# Web
-flutter run -d chrome
-
 # All devices
 flutter devices
 flutter run -d <device-id>
@@ -54,9 +51,6 @@ flutter build appbundle --release
 # If `ios/` is missing, generate it first:
 # flutter create --platforms=ios .
 flutter build ios --release
-
-# Web
-flutter build web --release
 ```
 
 ---
@@ -74,7 +68,38 @@ The app uses `cunning_document_scanner` to provide a native, cross-platform scan
 - Add `NSCameraUsageDescription` to `ios/Runner/Info.plist`
 - Enable camera permission macros in `ios/Podfile` for `permission_handler` (`PERMISSION_CAMERA=1`)
 
-> Note: Document scanning is not supported on Web.
+> Note: Web is out of scope for this project (Android/iOS only).
+
+---
+
+## Local Storage (Documents + Signatures)
+
+The app is **offline-first**. Documents and signatures are persisted locally:
+
+- **Metadata**: Hive
+- **Files**: `getApplicationDocumentsDirectory()` (PDFs, thumbnails, page images, signature PNGs)
+- **Important**: the DB stores **only relative file names** (paths are resolved at runtime), because the app directory root can change after updates/reinstall.
+
+### Document storage
+- Service: `lib/core/services/document_manager.dart`
+- Hive boxes:
+  - `documents_meta` (schema version)
+  - `documents_data` (documents + persisted page models)
+- Directories:
+  - `documents/` (PDFs)
+  - `thumbnails/` (first-page thumbnails)
+  - `pages/<docId>/` (page images to support editing after relaunch)
+  - `tmp/` (staging for atomic commit)
+
+### Signature storage
+- Service: `lib/core/services/signature_manager.dart`
+- Hive box: `signatures_data`
+- Directory: `signatures/` (transparent PNG files)
+
+### Initialization
+Initialization is done at app startup in `lib/main.dart`:
+- `DocumentManager.instance.init()`
+- `SignatureManager.instance.init()`
 
 ## Development Workflow
 
@@ -376,7 +401,6 @@ flutter doctor -v
 
 - Declarative routing
 - Deep linking support
-- Web URL support
 - Type-safe navigation
 
 ### Why RevenueCat?
